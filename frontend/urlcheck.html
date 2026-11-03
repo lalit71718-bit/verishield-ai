@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VeriShield AI | URL & Platform Safety Intelligence</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col">
+
+  <!-- Navbar -->
+  <nav class="border-b border-slate-800 bg-slate-900/60 backdrop-blur px-8 py-4 flex items-center justify-between">
+    <a href="index.html" class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-lg bg-indigo-600 flex items-center justify-center font-bold text-white">V</div>
+      <span class="text-xl font-extrabold tracking-tight text-white">VeriShield <span class="text-indigo-400">AI</span></span>
+    </a>
+    <div class="flex items-center gap-6 text-sm font-medium">
+      <a href="scanner.html" class="text-slate-300 hover:text-white transition">Workbench</a>
+      <a href="urlcheck.html" class="text-slate-200 hover:text-white">URL Intel</a>
+      <a href="profile.html" class="text-slate-300 hover:text-white transition">My Vault</a>
+      <button onclick="logout()" class="px-4 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition">Sign Out</button>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="max-w-6xl w-full mx-auto px-6 py-10 grid grid-cols-1 lg:grid-cols-12 gap-8 flex-1">
+    
+    <!-- Left Column: URL Ingestion Form -->
+    <section class="lg:col-span-5 bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between shadow-xl">
+      <div>
+        <h2 class="text-xl font-bold text-white">Platform & Social URL Ingestion</h2>
+        <p class="text-xs text-slate-400 mt-1 mb-6">Paste an e-commerce store link (Amazon, Nykaa, Blinkit, etc.) or social media reel/post link to inspect safety & authenticity.</p>
+
+        <div class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Target Web / Social URL</label>
+            <input id="targetUrlInput" type="url" placeholder="https://example.com/item or social post link..." class="w-full p-4 rounded-xl bg-slate-950 border border-slate-800 text-sm text-slate-200 focus:outline-none focus:border-indigo-500" />
+          </div>
+
+          <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-400 space-y-2">
+            <div class="font-bold text-indigo-400">Supported Ingestion Patterns:</div>
+            <div>• E-commerce store domains & product links</div>
+            <div>• Social media ads & flash-sale links</div>
+            <div>• Instagram Reels, X (Twitter) posts, & YouTube links</div>
+          </div>
+        </div>
+      </div>
+
+      <button id="checkUrlBtn" onclick="executeUrlCheck()" class="mt-6 w-full py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm transition shadow-lg shadow-indigo-600/20 cursor-pointer">
+        Analyze URL Safety & Provenance
+      </button>
+    </section>
+
+    <!-- Right Column: Safety Verdict & Intelligence Dashboard -->
+    <section class="lg:col-span-7 bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between shadow-xl">
+      <div>
+        <h2 class="text-xl font-bold text-white mb-6">URL Safety Intelligence & Verdict</h2>
+
+        <!-- Score Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+          <div class="bg-slate-950 border border-slate-800/80 rounded-xl p-5">
+            <span class="text-xs text-slate-400 block mb-1">Trust & Safety Score</span>
+            <div id="trustScoreValue" class="text-3xl font-extrabold text-slate-500">--%</div>
+            <div class="w-full bg-slate-800 h-2 rounded-full mt-3 overflow-hidden">
+              <div id="trustScoreBar" class="bg-indigo-500 h-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+          </div>
+
+          <div class="bg-slate-950 border border-slate-800/80 rounded-xl p-5">
+            <span class="text-xs text-slate-400 block mb-1">Phishing / Scam Risk Index</span>
+            <div id="riskScoreValue" class="text-3xl font-extrabold text-slate-500">--%</div>
+            <div class="w-full bg-slate-800 h-2 rounded-full mt-3 overflow-hidden">
+              <div id="riskScoreBar" class="bg-rose-500 h-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Adaptive Verdict Banner -->
+        <div id="urlVerdictBox" class="rounded-xl p-4 border border-slate-800 bg-slate-950 mb-6">
+          <div id="urlVerdictTitle" class="text-sm font-bold text-slate-300">Awaiting URL Input</div>
+          <p id="urlVerdictSummary" class="text-xs text-slate-400 mt-1">Enter a shopping portal or social media link on the left to evaluate merchant safety.</p>
+        </div>
+
+        <!-- Reasons & Heuristic Indicators -->
+        <div class="bg-slate-950 border border-slate-800/80 rounded-xl p-5">
+          <div class="text-xs font-bold uppercase tracking-wider text-indigo-400 mb-3">Safety & Heuristic Breakdown</div>
+          <ul id="urlReasonList" class="text-xs text-slate-300 space-y-2 list-disc list-inside">
+            <li class="text-slate-500">No URL inspected yet.</li>
+          </ul>
+        </div>
+
+      </div>
+
+      <div class="mt-6 text-right">
+        <a href="scanner.html" class="text-xs text-indigo-400 hover:text-indigo-300 font-medium">← Back to Document & Media Workbench</a>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    const API_URL = 'http://localhost:5000/api/url';
+
+    async function executeUrlCheck() {
+      const urlInput = document.getElementById('targetUrlInput').value.trim();
+      if (!urlInput) {
+        alert('Please enter a valid URL to analyze.');
+        return;
+      }
+
+      const token = localStorage.getItem('verishield_token') || localStorage.getItem('token');
+      const btn = document.getElementById('checkUrlBtn');
+      btn.disabled = true;
+      btn.innerText = 'Scanning Domain & Threat Intel...';
+
+      try {
+        const res = await fetch(`${API_URL}/check`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+          },
+          body: JSON.stringify({ targetUrl: urlInput })
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          alert(data.error || 'URL scan failed');
+          return;
+        }
+
+        const result = data.scan || data;
+        renderUrlTelemetry(result);
+      } catch (err) {
+        console.error(err);
+        alert('Server connection error.');
+      } finally {
+        btn.disabled = false;
+        btn.innerText = 'Analyze URL Safety & Provenance';
+      }
+    }
+
+    function renderUrlTelemetry(r) {
+      const trustScore = r.trustScore || 50;
+      const riskScore = r.riskScore || 50;
+      const isSafe = r.status === 'SAFE';
+
+      // Update scorecards
+      document.getElementById('trustScoreValue').innerText = `${trustScore}%`;
+      document.getElementById('trustScoreValue').className = `text-3xl font-extrabold ${isSafe ? 'text-emerald-400' : 'text-rose-400'}`;
+      document.getElementById('trustScoreBar').style.width = `${trustScore}%`;
+
+      document.getElementById('riskScoreValue').innerText = `${riskScore}%`;
+      document.getElementById('riskScoreBar').style.width = `${riskScore}%`;
+
+      const verdictBox = document.getElementById('urlVerdictBox');
+      const verdictTitle = document.getElementById('urlVerdictTitle');
+      const verdictSummary = document.getElementById('urlVerdictSummary');
+      const reasonList = document.getElementById('urlReasonList');
+
+      if (isSafe) {
+        verdictBox.className = "rounded-xl p-4 border border-emerald-800/80 bg-emerald-950/30 mb-6";
+        verdictTitle.className = "text-sm font-bold text-emerald-400";
+        verdictTitle.innerText = `✓ ${r.verdict}`;
+      } else {
+        verdictBox.className = "rounded-xl p-4 border border-rose-800/80 bg-rose-950/30 mb-6";
+        verdictTitle.className = "text-sm font-bold text-rose-400";
+        verdictTitle.innerText = `⚠️ ${r.verdict}`;
+      }
+
+      verdictSummary.innerText = r.summary;
+
+      const reasons = r.reasons || [];
+      if (reasons.length > 0) {
+        reasonList.innerHTML = reasons.map(reason => `<li>${reason}</li>`).join('');
+      } else {
+        reasonList.innerHTML = '<li class="text-slate-500">No anomaly details recorded.</li>';
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem('verishield_token');
+      localStorage.removeItem('token');
+      window.location.href = 'auth.html';
+    }
+  </script>
+</body>
+</html>

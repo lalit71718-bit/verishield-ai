@@ -1,0 +1,125 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VeriShield AI | Authentication Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex items-center justify-center p-6">
+
+  <div class="max-w-md w-full bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-2xl">
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <div class="w-12 h-12 rounded-xl bg-indigo-600 flex items-center justify-center font-bold text-white text-xl mx-auto mb-3">V</div>
+      <h1 class="text-2xl font-extrabold text-white">VeriShield <span class="text-indigo-400">AI</span></h1>
+      <p class="text-sm text-slate-400 mt-1">Deepfake Forensics & Victim Safety Platform</p>
+    </div>
+    <nav class="border-b border-slate-800 bg-slate-900/60 backdrop-blur px-8 py-4 flex items-center justify-between">
+  <a href="index.html" class="flex items-center gap-3">
+    <div class="w-9 h-9 rounded-lg bg-indigo-600 flex items-center justify-center font-bold text-white">V</div>
+    <span class="text-xl font-extrabold tracking-tight text-white">VeriShield <span class="text-indigo-400">AI</span></span>
+  </a>
+  <div class="flex items-center gap-6 text-sm font-medium">
+    <a href="index.html" class="text-slate-300 hover:text-white transition">Home</a>
+    <a href="urlcheck.html" class="text-slate-300 hover:text-white transition">URL Intel</a>
+  </div>
+</nav>
+
+    <!-- Mode Tabs (Sign In vs Register) -->
+    <div class="flex bg-slate-950 p-1 rounded-xl mb-6 border border-slate-800">
+      <button id="tabLogin" type="button" onclick="switchMode('login')" class="flex-1 py-2 text-sm font-semibold rounded-lg bg-indigo-600 text-white transition">Sign In</button>
+      <button id="tabRegister" type="button" onclick="switchMode('register')" class="flex-1 py-2 text-sm font-semibold rounded-lg text-slate-400 hover:text-white transition">Register</button>
+    </div>
+
+    <!-- Auth Form -->
+    <form id="authForm" onsubmit="handleSubmit(event)" class="space-y-4">
+      <div id="nameFieldContainer" class="hidden">
+        <label class="block text-xs font-medium text-slate-400 mb-1">Full Name</label>
+        <input id="nameInput" type="text" placeholder="Lalit Singh" class="w-full px-4 py-2.5 rounded-lg bg-slate-950 border border-slate-800 text-white focus:outline-none focus:border-indigo-500 text-sm" />
+      </div>
+
+      <div>
+        <label class="block text-xs font-medium text-slate-400 mb-1">Email Address</label>
+        <input id="emailInput" type="email" required placeholder="you@example.com" class="w-full px-4 py-2.5 rounded-lg bg-slate-950 border border-slate-800 text-white focus:outline-none focus:border-indigo-500 text-sm" />
+      </div>
+
+      <div>
+        <label class="block text-xs font-medium text-slate-400 mb-1">Password</label>
+        <input id="passwordInput" type="password" required placeholder="••••••••" class="w-full px-4 py-2.5 rounded-lg bg-slate-950 border border-slate-800 text-white focus:outline-none focus:border-indigo-500 text-sm" />
+      </div>
+
+      <button id="submitBtn" type="submit" class="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 font-bold text-white text-sm transition shadow-lg shadow-indigo-600/20">
+        Sign In to Workbench
+      </button>
+    </form>
+
+    <div class="mt-6 text-center">
+      <a href="index.html" class="text-xs text-slate-500 hover:text-slate-400 transition">← Back to Landing Page</a>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = 'http://localhost:5000/api/auth';
+    let isRegisterMode = false;
+
+    function switchMode(mode) {
+      isRegisterMode = mode === 'register';
+      const tabLogin = document.getElementById('tabLogin');
+      const tabRegister = document.getElementById('tabRegister');
+      const nameContainer = document.getElementById('nameFieldContainer');
+      const submitBtn = document.getElementById('submitBtn');
+
+      if (isRegisterMode) {
+        tabRegister.className = "flex-1 py-2 text-sm font-semibold rounded-lg bg-indigo-600 text-white transition";
+        tabLogin.className = "flex-1 py-2 text-sm font-semibold rounded-lg text-slate-400 hover:text-white transition";
+        nameContainer.classList.remove('hidden');
+        document.getElementById('nameInput').required = true;
+        submitBtn.innerText = "Create Account";
+      } else {
+        tabLogin.className = "flex-1 py-2 text-sm font-semibold rounded-lg bg-indigo-600 text-white transition";
+        tabRegister.className = "flex-1 py-2 text-sm font-semibold rounded-lg text-slate-400 hover:text-white transition";
+        nameContainer.classList.add('hidden');
+        document.getElementById('nameInput').required = false;
+        submitBtn.innerText = "Sign In to Workbench";
+      }
+    }
+
+    async function handleSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById('emailInput').value;
+      const password = document.getElementById('passwordInput').value;
+      const name = document.getElementById('nameInput').value;
+
+      const endpoint = isRegisterMode ? `${API_BASE}/register` : `${API_BASE}/login`;
+      const payload = isRegisterMode ? { name, email, password } : { email, password };
+
+      try {
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+
+        if (res.ok) {
+          localStorage.setItem('verishield_token', data.token);
+          localStorage.setItem('token', data.token);
+
+          const userObj = data.user || { name: data.name, email: data.email };
+          localStorage.setItem('verishield_user', JSON.stringify(userObj));
+          localStorage.setItem('user', JSON.stringify(userObj));
+
+          alert('Authentication successful!');
+          window.location.href = 'scanner.html';
+        } else {
+          alert(data.error || 'Authentication failed');
+        }
+      } catch (err) {
+        alert('Could not connect to backend server.');
+      }
+    }
+  </script>
+</body>
+</html>
