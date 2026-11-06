@@ -29,3 +29,5 @@ verishield-ai/
     ├── scanner.html     (Protected Document & Media Forensic Workbench)
     ├── urlcheck.html    (Protected URL Threat Intelligence Console)
     └── profile.html     (Protected User Vault Audit Ledger)
+
+Live check at here: https://verisheld.netlify.app/
