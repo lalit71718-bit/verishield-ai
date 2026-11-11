@@ -3,186 +3,256 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VeriShield AI | URL & Platform Safety Intelligence</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <title>URL Intel — VeriShield AI</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 3 5.500 7v8c0 6.300 4.400 11.500 10.500 13.500C22.100 26.500 26.500 21.300 26.500 15V7L16 3Z' fill='%23928fff'/%3E%3Cpath d='m11 15.500 3.600 3.600L21.500 12' stroke='%23090b0f' stroke-width='2.600' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="app.js"></script>
 </head>
-<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col">
+<body>
 
-  <!-- Navbar -->
-  <nav class="border-b border-slate-800 bg-slate-900/60 backdrop-blur px-8 py-4 flex items-center justify-between">
-    <a href="index.html" class="flex items-center gap-3">
-      <div class="w-9 h-9 rounded-lg bg-indigo-600 flex items-center justify-center font-bold text-white">V</div>
-      <span class="text-xl font-extrabold tracking-tight text-white">VeriShield <span class="text-indigo-400">AI</span></span>
-    </a>
-    <div class="flex items-center gap-6 text-sm font-medium">
-      <a href="scanner.html" class="text-slate-300 hover:text-white transition">Workbench</a>
-      <a href="urlcheck.html" class="text-slate-200 hover:text-white">URL Intel</a>
-      <a href="profile.html" class="text-slate-300 hover:text-white transition">My Vault</a>
-      <button onclick="logout()" class="px-4 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition">Sign Out</button>
+  <header id="nav"></header>
+  <script>VS.mountNav('urlcheck');</script>
+
+  <main class="shell">
+    <div class="page-head">
+      <span class="eyebrow eyebrow--accent">URL intel</span>
+      <h1>Is this link safe to open?</h1>
+      <p>Paste a shop, ad or social link before you buy or sign in. You'll get a trust score, a scam-risk score and the reasons behind them.</p>
     </div>
-  </nav>
 
-  <!-- Main Content -->
-  <main class="max-w-6xl w-full mx-auto px-6 py-10 grid grid-cols-1 lg:grid-cols-12 gap-8 flex-1">
-    
-    <!-- Left Column: URL Ingestion Form -->
-    <section class="lg:col-span-5 bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between shadow-xl">
-      <div>
-        <h2 class="text-xl font-bold text-white">Platform & Social URL Ingestion</h2>
-        <p class="text-xs text-slate-400 mt-1 mb-6">Paste an e-commerce store link (Amazon, Nykaa, Blinkit, etc.) or social media reel/post link to inspect safety & authenticity.</p>
+    <div class="workbench">
+      <!-- Input -->
+      <section class="card" aria-labelledby="inputTitle">
+        <h2 class="card__title" id="inputTitle">Link</h2>
+        <p class="card__sub">Full URLs and bare domains both work.</p>
 
-        <div class="space-y-4">
+        <form id="urlForm" novalidate style="margin-top: 20px;">
+          <label class="sr-only" for="urlInput">Link to check</label>
+          <input class="input mono" id="urlInput" type="text" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="https://example.com/offer" />
+          <button class="btn btn--primary btn--lg btn--block" id="checkBtn" type="submit" style="margin-top: 14px;">Check link</button>
+        </form>
+
+        <div class="block">
+          <div class="eyebrow block__title">Try an example</div>
+          <div class="examples" id="examples"></div>
+        </div>
+
+        <div class="block" id="recentBlock" hidden>
+          <div class="eyebrow block__title" style="display: flex; justify-content: space-between; align-items: center;">
+            <span>Recent on this device</span>
+            <button type="button" id="clearRecent" class="link" style="font-size: 12px; background: none; border: 0; padding: 0; text-transform: none; letter-spacing: 0;">Clear</button>
+          </div>
+          <ul class="recent" id="recent"></ul>
+        </div>
+      </section>
+
+      <!-- Result -->
+      <section class="card" aria-labelledby="resultTitle" aria-live="polite">
+        <h2 class="sr-only" id="resultTitle">Result</h2>
+
+        <div class="empty" id="stateEmpty">
           <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Target Web / Social URL</label>
-            <input id="targetUrlInput" type="url" placeholder="https://example.com/item or social post link..." class="w-full p-4 rounded-xl bg-slate-950 border border-slate-800 text-sm text-slate-200 focus:outline-none focus:border-indigo-500" />
-          </div>
-
-          <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-400 space-y-2">
-            <div class="font-bold text-indigo-400">Supported Ingestion Patterns:</div>
-            <div>• E-commerce store domains & product links</div>
-            <div>• Social media ads & flash-sale links</div>
-            <div>• Instagram Reels, X (Twitter) posts, & YouTube links</div>
+            <svg class="empty__art" viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="40" cy="40" r="28"/><path d="M12 40h56M40 12c8 8 12 17.500 12 28s-4 20-12 28c-8-8-12-17.500-12-28s4-20 12-28Z"/></svg>
+            <h3>No link checked yet</h3>
+            <p>Paste a link or pick an example. The verdict appears here.</p>
           </div>
         </div>
-      </div>
 
-      <button id="checkUrlBtn" onclick="executeUrlCheck()" class="mt-6 w-full py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm transition shadow-lg shadow-indigo-600/20 cursor-pointer">
-        Analyze URL Safety & Provenance
-      </button>
-    </section>
+        <div class="scanning" id="stateLoading" hidden>
+          <div>
+            <div class="scan-doc" style="margin: 0 auto;" aria-hidden="true"></div>
+            <h3 style="margin-top: 22px; font-size: 19px;">Checking link…</h3>
+            <p class="scanning__step">Inspecting domain and URL patterns</p>
+          </div>
+        </div>
 
-    <!-- Right Column: Safety Verdict & Intelligence Dashboard -->
-    <section class="lg:col-span-7 bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between shadow-xl">
-      <div>
-        <h2 class="text-xl font-bold text-white mb-6">URL Safety Intelligence & Verdict</h2>
-
-        <!-- Score Cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-          <div class="bg-slate-950 border border-slate-800/80 rounded-xl p-5">
-            <span class="text-xs text-slate-400 block mb-1">Trust & Safety Score</span>
-            <div id="trustScoreValue" class="text-3xl font-extrabold text-slate-500">--%</div>
-            <div class="w-full bg-slate-800 h-2 rounded-full mt-3 overflow-hidden">
-              <div id="trustScoreBar" class="bg-indigo-500 h-full transition-all duration-500" style="width: 0%"></div>
+        <div id="stateResult" hidden>
+          <div class="verdict" id="verdict">
+            <div class="verdict__icon" id="verdictIcon"></div>
+            <div>
+              <div class="verdict__title" id="verdictTitle"></div>
+              <p class="verdict__text" id="verdictText"></p>
             </div>
           </div>
 
-          <div class="bg-slate-950 border border-slate-800/80 rounded-xl p-5">
-            <span class="text-xs text-slate-400 block mb-1">Phishing / Scam Risk Index</span>
-            <div id="riskScoreValue" class="text-3xl font-extrabold text-slate-500">--%</div>
-            <div class="w-full bg-slate-800 h-2 rounded-full mt-3 overflow-hidden">
-              <div id="riskScoreBar" class="bg-rose-500 h-full transition-all duration-500" style="width: 0%"></div>
+          <div class="block">
+            <div class="eyebrow block__title">Domain inspected</div>
+            <div class="hash">
+              <code id="domainValue" style="color: var(--text); font-size: 13.5px;"></code>
+              <span class="chip" id="statusChip"></span>
             </div>
           </div>
+
+          <div class="scores block">
+            <div class="score">
+              <div id="gaugeTrust"></div>
+              <div>
+                <div class="score__label">Trust score</div>
+                <div class="score__note">Higher is better. Based on platform match and URL structure.</div>
+              </div>
+            </div>
+            <div class="score">
+              <div id="gaugeRisk"></div>
+              <div>
+                <div class="score__label">Scam risk</div>
+                <div class="score__note">Higher is worse. Based on phishing and fake-store patterns.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="block">
+            <div class="eyebrow block__title">Why this verdict</div>
+            <ul class="findings" id="reasons"></ul>
+          </div>
         </div>
-
-        <!-- Adaptive Verdict Banner -->
-        <div id="urlVerdictBox" class="rounded-xl p-4 border border-slate-800 bg-slate-950 mb-6">
-          <div id="urlVerdictTitle" class="text-sm font-bold text-slate-300">Awaiting URL Input</div>
-          <p id="urlVerdictSummary" class="text-xs text-slate-400 mt-1">Enter a shopping portal or social media link on the left to evaluate merchant safety.</p>
-        </div>
-
-        <!-- Reasons & Heuristic Indicators -->
-        <div class="bg-slate-950 border border-slate-800/80 rounded-xl p-5">
-          <div class="text-xs font-bold uppercase tracking-wider text-indigo-400 mb-3">Safety & Heuristic Breakdown</div>
-          <ul id="urlReasonList" class="text-xs text-slate-300 space-y-2 list-disc list-inside">
-            <li class="text-slate-500">No URL inspected yet.</li>
-          </ul>
-        </div>
-
-      </div>
-
-      <div class="mt-6 text-right">
-        <a href="scanner.html" class="text-xs text-indigo-400 hover:text-indigo-300 font-medium">← Back to Document & Media Workbench</a>
-      </div>
-    </section>
-
+      </section>
+    </div>
   </main>
 
-  <script>
-    const API_URL = 'http://localhost:5000/api/url';
+  <footer id="footer"></footer>
 
-    async function executeUrlCheck() {
-      const urlInput = document.getElementById('targetUrlInput').value.trim();
-      if (!urlInput) {
-        alert('Please enter a valid URL to analyze.');
-        return;
+  <script>
+    (function () {
+      const $ = (id) => document.getElementById(id);
+      const RECENT_KEY = 'verishield_recent_urls';
+      const EXAMPLES = ['amazon.in', 'blinkit-grocery-offers-sale.com', 'trendy-kicks.store/sneakers'];
+      const TONES = { SAFE: 'safe', SUSPICIOUS: 'warn', PHISHING: 'danger' };
+      const LABELS = { SAFE: 'Safe', SUSPICIOUS: 'Suspicious', PHISHING: 'Phishing' };
+
+      $('gaugeTrust').outerHTML = VS.gaugeHTML('gaugeTrust');
+      $('gaugeRisk').outerHTML = VS.gaugeHTML('gaugeRisk');
+
+      let hasResult = false;
+
+      function setState(name) {
+        $('stateEmpty').hidden = name !== 'empty';
+        $('stateLoading').hidden = name !== 'loading';
+        $('stateResult').hidden = name !== 'result';
       }
 
-      const token = localStorage.getItem('verishield_token') || localStorage.getItem('token');
-      const btn = document.getElementById('checkUrlBtn');
-      btn.disabled = true;
-      btn.innerText = 'Scanning Domain & Threat Intel...';
+      /* ---------- Recent checks (stored on this device only) ---------- */
 
-      try {
-        const res = await fetch(`${API_URL}/check`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-          },
-          body: JSON.stringify({ targetUrl: urlInput })
+      function loadRecent() {
+        try {
+          const list = JSON.parse(localStorage.getItem(RECENT_KEY) || '[]');
+          return Array.isArray(list) ? list : [];
+        } catch (e) { return []; }
+      }
+
+      function saveRecent(list) {
+        try { localStorage.setItem(RECENT_KEY, JSON.stringify(list.slice(0, 6))); } catch (e) { /* storage blocked */ }
+      }
+
+      function paintRecent() {
+        const list = loadRecent();
+        $('recentBlock').hidden = !list.length;
+        const ul = $('recent');
+        ul.innerHTML = '';
+        list.forEach((item) => {
+          const li = document.createElement('li');
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.textContent = item.url;
+          btn.title = item.url;
+          btn.addEventListener('click', () => check(item.url));
+          const chip = document.createElement('span');
+          chip.className = 'chip';
+          chip.dataset.tone = TONES[item.status] || '';
+          chip.textContent = LABELS[item.status] || item.status;
+          li.append(btn, chip);
+          ul.appendChild(li);
+        });
+      }
+
+      $('clearRecent').addEventListener('click', () => { saveRecent([]); paintRecent(); });
+
+      /* ---------- Check ---------- */
+
+      async function check(raw) {
+        const url = String(raw || '').trim();
+        if (!url) return VS.toast('Paste a link to check first.', 'danger');
+        if (/\s/.test(url) || !url.includes('.')) return VS.toast("That doesn't look like a link. Try something like example.com/page.", 'danger');
+
+        $('urlInput').value = url;
+        const btn = $('checkBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span>Checking…';
+        setState('loading');
+
+        try {
+          const data = await VS.api('/url/check', { method: 'POST', body: { targetUrl: url } });
+          render(data.scan || data, url);
+        } catch (err) {
+          VS.toast(err.message, 'danger');
+          setState(hasResult ? 'result' : 'empty');
+        } finally {
+          btn.disabled = false;
+          btn.textContent = 'Check link';
+        }
+      }
+
+      function render(r, url) {
+        const status = TONES[r.status] ? r.status : 'SUSPICIOUS';
+        const tone = TONES[status];
+        const trust = Number(r.trustScore ?? 0);
+        const risk = Number(r.riskScore ?? 0);
+
+        $('verdict').dataset.tone = tone;
+        $('verdictIcon').innerHTML = VS.icon(status === 'SAFE' ? 'check' : 'alert');
+        $('verdictTitle').textContent = r.verdict || LABELS[status];
+        $('verdictText').textContent = r.summary || '';
+        $('domainValue').textContent = r.domain || url;
+        $('statusChip').textContent = LABELS[status];
+        $('statusChip').dataset.tone = tone;
+
+        const reasons = $('reasons');
+        reasons.innerHTML = '';
+        (r.reasons && r.reasons.length ? r.reasons : ['No further details recorded.']).forEach((text) => {
+          const li = document.createElement('li');
+          li.textContent = text;
+          reasons.appendChild(li);
         });
 
-        const data = await res.json();
-        if (!res.ok) {
-          alert(data.error || 'URL scan failed');
-          return;
-        }
+        hasResult = true;
+        setState('result');
+        $('stateResult').classList.remove('rise');
+        void $('stateResult').offsetWidth;
+        $('stateResult').classList.add('rise');
 
-        const result = data.scan || data;
-        renderUrlTelemetry(result);
-      } catch (err) {
-        console.error(err);
-        alert('Server connection error.');
-      } finally {
-        btn.disabled = false;
-        btn.innerText = 'Analyze URL Safety & Provenance';
-      }
-    }
+        VS.resetGauge($('gaugeTrust'));
+        VS.resetGauge($('gaugeRisk'));
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          VS.setGauge($('gaugeTrust'), trust, VS.scoreTone(trust, true), 'Trust score');
+          VS.setGauge($('gaugeRisk'), risk, VS.scoreTone(risk), 'Scam risk');
+        }));
 
-    function renderUrlTelemetry(r) {
-      const trustScore = r.trustScore || 50;
-      const riskScore = r.riskScore || 50;
-      const isSafe = r.status === 'SAFE';
-
-      // Update scorecards
-      document.getElementById('trustScoreValue').innerText = `${trustScore}%`;
-      document.getElementById('trustScoreValue').className = `text-3xl font-extrabold ${isSafe ? 'text-emerald-400' : 'text-rose-400'}`;
-      document.getElementById('trustScoreBar').style.width = `${trustScore}%`;
-
-      document.getElementById('riskScoreValue').innerText = `${riskScore}%`;
-      document.getElementById('riskScoreBar').style.width = `${riskScore}%`;
-
-      const verdictBox = document.getElementById('urlVerdictBox');
-      const verdictTitle = document.getElementById('urlVerdictTitle');
-      const verdictSummary = document.getElementById('urlVerdictSummary');
-      const reasonList = document.getElementById('urlReasonList');
-
-      if (isSafe) {
-        verdictBox.className = "rounded-xl p-4 border border-emerald-800/80 bg-emerald-950/30 mb-6";
-        verdictTitle.className = "text-sm font-bold text-emerald-400";
-        verdictTitle.innerText = `✓ ${r.verdict}`;
-      } else {
-        verdictBox.className = "rounded-xl p-4 border border-rose-800/80 bg-rose-950/30 mb-6";
-        verdictTitle.className = "text-sm font-bold text-rose-400";
-        verdictTitle.innerText = `⚠️ ${r.verdict}`;
+        saveRecent([{ url, status }, ...loadRecent().filter((x) => x.url !== url)]);
+        paintRecent();
       }
 
-      verdictSummary.innerText = r.summary;
+      $('urlForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        check($('urlInput').value);
+      });
 
-      const reasons = r.reasons || [];
-      if (reasons.length > 0) {
-        reasonList.innerHTML = reasons.map(reason => `<li>${reason}</li>`).join('');
-      } else {
-        reasonList.innerHTML = '<li class="text-slate-500">No anomaly details recorded.</li>';
-      }
-    }
+      EXAMPLES.forEach((example) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'example';
+        btn.textContent = example;
+        btn.addEventListener('click', () => check(example));
+        $('examples').appendChild(btn);
+      });
 
-    function logout() {
-      localStorage.removeItem('verishield_token');
-      localStorage.removeItem('token');
-      window.location.href = 'auth.html';
-    }
+      paintRecent();
+
+      // Link handed over from the landing page's quick check.
+      const handed = new URLSearchParams(location.search).get('u');
+      if (handed) check(handed);
+    })();
   </script>
 </body>
 </html>

@@ -1,125 +1,181 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VeriShield AI | Authentication Portal</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Sign in — VeriShield AI</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 3 5.500 7v8c0 6.300 4.400 11.500 10.500 13.500C22.100 26.500 26.500 21.300 26.500 15V7L16 3Z' fill='%23928fff'/%3E%3Cpath d='m11 15.500 3.600 3.600L21.500 12' stroke='%23090b0f' stroke-width='2.600' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="app.js"></script>
+  <script>
+    // Only same-site page names are accepted as a post-login destination.
+    function nextPage() {
+      const next = new URLSearchParams(location.search).get('next') || '';
+      return /^[a-z]+\.html(\?[^#]*)?$/i.test(next) ? next : 'scanner.html';
+    }
+    if (VS.getToken()) location.replace(nextPage());
+  </script>
 </head>
-<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex items-center justify-center p-6">
+<body>
 
-  <div class="max-w-md w-full bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-2xl">
-    <!-- Header -->
-    <div class="text-center mb-8">
-      <div class="w-12 h-12 rounded-xl bg-indigo-600 flex items-center justify-center font-bold text-white text-xl mx-auto mb-3">V</div>
-      <h1 class="text-2xl font-extrabold text-white">VeriShield <span class="text-indigo-400">AI</span></h1>
-      <p class="text-sm text-slate-400 mt-1">Deepfake Forensics & Victim Safety Platform</p>
-    </div>
-    <nav class="border-b border-slate-800 bg-slate-900/60 backdrop-blur px-8 py-4 flex items-center justify-between">
-  <a href="index.html" class="flex items-center gap-3">
-    <div class="w-9 h-9 rounded-lg bg-indigo-600 flex items-center justify-center font-bold text-white">V</div>
-    <span class="text-xl font-extrabold tracking-tight text-white">VeriShield <span class="text-indigo-400">AI</span></span>
-  </a>
-  <div class="flex items-center gap-6 text-sm font-medium">
-    <a href="index.html" class="text-slate-300 hover:text-white transition">Home</a>
-    <a href="urlcheck.html" class="text-slate-300 hover:text-white transition">URL Intel</a>
-  </div>
-</nav>
-
-    <!-- Mode Tabs (Sign In vs Register) -->
-    <div class="flex bg-slate-950 p-1 rounded-xl mb-6 border border-slate-800">
-      <button id="tabLogin" type="button" onclick="switchMode('login')" class="flex-1 py-2 text-sm font-semibold rounded-lg bg-indigo-600 text-white transition">Sign In</button>
-      <button id="tabRegister" type="button" onclick="switchMode('register')" class="flex-1 py-2 text-sm font-semibold rounded-lg text-slate-400 hover:text-white transition">Register</button>
-    </div>
-
-    <!-- Auth Form -->
-    <form id="authForm" onsubmit="handleSubmit(event)" class="space-y-4">
-      <div id="nameFieldContainer" class="hidden">
-        <label class="block text-xs font-medium text-slate-400 mb-1">Full Name</label>
-        <input id="nameInput" type="text" placeholder="Lalit Singh" class="w-full px-4 py-2.5 rounded-lg bg-slate-950 border border-slate-800 text-white focus:outline-none focus:border-indigo-500 text-sm" />
-      </div>
-
+  <div class="auth">
+    <aside class="auth__aside">
+      <a class="brand" href="index.html" id="asideBrand"></a>
       <div>
-        <label class="block text-xs font-medium text-slate-400 mb-1">Email Address</label>
-        <input id="emailInput" type="email" required placeholder="you@example.com" class="w-full px-4 py-2.5 rounded-lg bg-slate-950 border border-slate-800 text-white focus:outline-none focus:border-indigo-500 text-sm" />
+        <h1>Your evidence, <span class="serif">on the record</span>.</h1>
+        <ul class="auth__points" id="authPoints"></ul>
       </div>
+      <span class="eyebrow">Verdicts are heuristic indicators, not legal proof</span>
+    </aside>
 
-      <div>
-        <label class="block text-xs font-medium text-slate-400 mb-1">Password</label>
-        <input id="passwordInput" type="password" required placeholder="••••••••" class="w-full px-4 py-2.5 rounded-lg bg-slate-950 border border-slate-800 text-white focus:outline-none focus:border-indigo-500 text-sm" />
+    <main class="auth__main">
+      <div class="auth__panel">
+        <a class="brand auth__mobile-brand" href="index.html" id="mobileBrand"></a>
+
+        <h2 id="authTitle">Welcome back</h2>
+        <p id="authSub">Sign in to open your workbench and vault.</p>
+
+        <form class="auth__form" id="authForm" novalidate>
+          <div class="segmented" role="tablist" aria-label="Account action" style="margin-bottom: 22px;">
+            <button type="button" role="tab" id="tabLogin" aria-selected="true">Sign in</button>
+            <button type="button" role="tab" id="tabRegister" aria-selected="false">Create account</button>
+          </div>
+
+          <div class="notice" id="authError" role="alert" hidden style="margin-bottom: 18px;"></div>
+
+          <label class="field" id="nameField" hidden>
+            <span class="label">Full name</span>
+            <input class="input" id="nameInput" type="text" autocomplete="name" placeholder="Your name" />
+          </label>
+
+          <label class="field">
+            <span class="label">Email address</span>
+            <input class="input" id="emailInput" type="email" autocomplete="email" placeholder="you@example.com" required />
+          </label>
+
+          <div class="field">
+            <label class="label" for="passwordInput">Password</label>
+            <div class="input-wrap">
+              <input class="input" id="passwordInput" type="password" autocomplete="current-password" placeholder="Enter your password" required />
+              <button class="icon-btn" type="button" id="togglePassword" aria-label="Show password" aria-pressed="false"></button>
+            </div>
+            <p class="hint" id="passwordHint" hidden>Use at least 8 characters.</p>
+          </div>
+
+          <button class="btn btn--primary btn--lg btn--block" id="submitBtn" type="submit" style="margin-top: 24px;">Sign in</button>
+        </form>
+
+        <p class="auth__foot">Just want to check a link? <a href="urlcheck.html">URL Intel needs no account</a></p>
       </div>
-
-      <button id="submitBtn" type="submit" class="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 font-bold text-white text-sm transition shadow-lg shadow-indigo-600/20">
-        Sign In to Workbench
-      </button>
-    </form>
-
-    <div class="mt-6 text-center">
-      <a href="index.html" class="text-xs text-slate-500 hover:text-slate-400 transition">← Back to Landing Page</a>
-    </div>
+    </main>
   </div>
 
   <script>
-    const API_BASE = 'http://localhost:5000/api/auth';
-    let isRegisterMode = false;
+    (function () {
+      const $ = (id) => document.getElementById(id);
+      const brand = `${VS.LOGO}<span>VeriShield <em>AI</em></span>`;
+      $('asideBrand').innerHTML = brand;
+      $('mobileBrand').innerHTML = brand;
 
-    function switchMode(mode) {
-      isRegisterMode = mode === 'register';
-      const tabLogin = document.getElementById('tabLogin');
-      const tabRegister = document.getElementById('tabRegister');
-      const nameContainer = document.getElementById('nameFieldContainer');
-      const submitBtn = document.getElementById('submitBtn');
+      $('authPoints').innerHTML = [
+        'Scan images, video, PDFs and text for signs of tampering',
+        'Every verdict is saved with a SHA-256 fingerprint',
+        'Download a PDF evidence certificate for any scan'
+      ].map((t) => `<li>${VS.icon('check')}<span>${t}</span></li>`).join('');
 
-      if (isRegisterMode) {
-        tabRegister.className = "flex-1 py-2 text-sm font-semibold rounded-lg bg-indigo-600 text-white transition";
-        tabLogin.className = "flex-1 py-2 text-sm font-semibold rounded-lg text-slate-400 hover:text-white transition";
-        nameContainer.classList.remove('hidden');
-        document.getElementById('nameInput').required = true;
-        submitBtn.innerText = "Create Account";
-      } else {
-        tabLogin.className = "flex-1 py-2 text-sm font-semibold rounded-lg bg-indigo-600 text-white transition";
-        tabRegister.className = "flex-1 py-2 text-sm font-semibold rounded-lg text-slate-400 hover:text-white transition";
-        nameContainer.classList.add('hidden');
-        document.getElementById('nameInput').required = false;
-        submitBtn.innerText = "Sign In to Workbench";
+      const errorBox = $('authError');
+      const submitBtn = $('submitBtn');
+      let mode = 'login';
+
+      function showError(message) {
+        errorBox.innerHTML = `${VS.icon('alert')}<span>${VS.esc(message)}</span>`;
+        errorBox.dataset.tone = '';
+        errorBox.hidden = false;
       }
-    }
 
-    async function handleSubmit(e) {
-      e.preventDefault();
-      const email = document.getElementById('emailInput').value;
-      const password = document.getElementById('passwordInput').value;
-      const name = document.getElementById('nameInput').value;
+      function setMode(next) {
+        mode = next === 'register' ? 'register' : 'login';
+        const reg = mode === 'register';
+        $('tabLogin').setAttribute('aria-selected', String(!reg));
+        $('tabRegister').setAttribute('aria-selected', String(reg));
+        $('nameField').hidden = !reg;
+        $('passwordHint').hidden = !reg;
+        $('passwordInput').autocomplete = reg ? 'new-password' : 'current-password';
+        $('passwordInput').placeholder = reg ? 'Create a password' : 'Enter your password';
+        $('authTitle').textContent = reg ? 'Create your account' : 'Welcome back';
+        $('authSub').textContent = reg
+          ? 'Free to use. Your scans are saved to a private vault.'
+          : 'Sign in to open your workbench and vault.';
+        submitBtn.textContent = reg ? 'Create account' : 'Sign in';
+        document.title = `${reg ? 'Create account' : 'Sign in'} — VeriShield AI`;
+        errorBox.hidden = true;
+      }
 
-      const endpoint = isRegisterMode ? `${API_BASE}/register` : `${API_BASE}/login`;
-      const payload = isRegisterMode ? { name, email, password } : { email, password };
+      $('tabLogin').addEventListener('click', () => setMode('login'));
+      $('tabRegister').addEventListener('click', () => setMode('register'));
 
-      try {
-        const res = await fetch(endpoint, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        const data = await res.json();
+      // Password visibility
+      const toggle = $('togglePassword');
+      const paintToggle = (shown) => {
+        toggle.innerHTML = VS.icon(shown ? 'eyeOff' : 'eye');
+        toggle.setAttribute('aria-label', shown ? 'Hide password' : 'Show password');
+        toggle.setAttribute('aria-pressed', String(shown));
+      };
+      paintToggle(false);
+      toggle.addEventListener('click', () => {
+        const input = $('passwordInput');
+        const shown = input.type === 'password';
+        input.type = shown ? 'text' : 'password';
+        paintToggle(shown);
+      });
 
-        if (res.ok) {
-          localStorage.setItem('verishield_token', data.token);
-          localStorage.setItem('token', data.token);
+      $('authForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const name = $('nameInput').value.trim();
+        const email = $('emailInput').value.trim();
+        const password = $('passwordInput').value;
+        const reg = mode === 'register';
 
-          const userObj = data.user || { name: data.name, email: data.email };
-          localStorage.setItem('verishield_user', JSON.stringify(userObj));
-          localStorage.setItem('user', JSON.stringify(userObj));
+        if (reg && !name) return showError('Enter your name to create an account.');
+        if (!/^\S+@\S+\.\S+$/.test(email)) return showError('Enter a valid email address.');
+        if (!password) return showError('Enter your password.');
+        if (reg && password.length < 8) return showError('Choose a password with at least 8 characters.');
 
-          alert('Authentication successful!');
-          window.location.href = 'scanner.html';
-        } else {
-          alert(data.error || 'Authentication failed');
+        errorBox.hidden = true;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `<span class="spinner"></span>${reg ? 'Creating account…' : 'Signing in…'}`;
+
+        try {
+          const data = await VS.api(reg ? '/auth/register' : '/auth/login', {
+            method: 'POST',
+            body: reg ? { name, email, password } : { email, password }
+          });
+          if (!data || !data.token) throw new Error('The server did not return a session. Try again.');
+          VS.setSession(data.token, data.user || { name: data.name, email: data.email });
+          location.replace(nextPage());
+        } catch (err) {
+          showError(err.message);
+          submitBtn.disabled = false;
+          submitBtn.textContent = reg ? 'Create account' : 'Sign in';
         }
-      } catch (err) {
-        alert('Could not connect to backend server.');
-      }
-    }
+      });
+
+      setMode(new URLSearchParams(location.search).get('mode'));
+
+      // Message handed over by a redirect (e.g. expired session).
+      try {
+        const flash = sessionStorage.getItem('verishield_flash');
+        if (flash) {
+          sessionStorage.removeItem('verishield_flash');
+          errorBox.innerHTML = `${VS.icon('alert')}<span>${VS.esc(flash)}</span>`;
+          errorBox.dataset.tone = 'accent';
+          errorBox.hidden = false;
+        }
+      } catch (e) { /* storage blocked */ }
+    })();
   </script>
 </body>
 </html>

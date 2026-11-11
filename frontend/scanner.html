@@ -2,412 +2,428 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <!-- 🔒 STRICT AUTH GUARD: Blocks unauthorized access instantly -->
-  <script>
-    const activeToken = localStorage.getItem('verishield_token') || localStorage.getItem('token');
-    if (!activeToken) {
-      // If no token exists, bounce them straight to login/register
-      window.location.replace('auth.html');
-    }
-  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VeriShield AI | Forensic Workbench</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Fixed pdfmake CDN Links -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+  <title>Workbench — VeriShield AI</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 3 5.500 7v8c0 6.300 4.400 11.500 10.500 13.500C22.100 26.500 26.500 21.300 26.500 15V7L16 3Z' fill='%23928fff'/%3E%3Cpath d='m11 15.500 3.600 3.600L21.500 12' stroke='%23090b0f' stroke-width='2.600' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="app.js"></script>
+  <script>VS.requireAuth();</script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 </head>
-<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col">
+<body>
 
-  <!-- Navbar -->
+  <header id="nav"></header>
+  <script>VS.mountNav('scanner');</script>
 
-  <nav class="border-b border-slate-800 bg-slate-900/60 backdrop-blur px-8 py-4 flex items-center justify-between">
-  <a href="scanner.html" class="flex items-center gap-3">
-    <div class="w-9 h-9 rounded-lg bg-indigo-600 flex items-center justify-center font-bold text-white">V</div>
-    <span class="text-xl font-extrabold tracking-tight text-white">VeriShield <span class="text-indigo-400">AI</span></span>
-  </a>
-  <div class="flex items-center gap-6 text-sm font-medium">
-    <a href="scanner.html" class="text-slate-300 hover:text-white transition">Workbench</a>
-    <a href="urlcheck.html" class="text-slate-200 hover:text-white">URL Intel</a>
-    <a href="profile.html" class="text-slate-300 hover:text-white transition">My Vault</a>
-    <button onclick="logout()" class="px-4 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition">Sign Out</button>
-  </div>
-</nav>
+  <main class="shell">
+    <div class="page-head">
+      <span class="eyebrow eyebrow--accent">Forensic workbench</span>
+      <h1>Is this file what it claims to be?</h1>
+      <p>Upload an image, video or PDF, or paste text. You'll get a manipulation score, the signals behind it and a fingerprinted record in your vault.</p>
+    </div>
 
-  <!-- Main Content -->
-  <main class="max-w-6xl w-full mx-auto px-6 py-10 grid grid-cols-1 lg:grid-cols-12 gap-8 flex-1">
-    
-    <!-- Left Column: Multimodal Ingestion -->
-    <section class="lg:col-span-5 bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between shadow-xl">
-      <div>
-        <h2 class="text-xl font-bold text-white">Multimodal Ingestion</h2>
-        <p class="text-xs text-slate-400 mt-1 mb-6">Analyze media files (up to 100MB) or paste raw text articles for synthetic evaluation.</p>
+    <div class="workbench">
+      <!-- Input -->
+      <section class="card" aria-labelledby="inputTitle">
+        <h2 class="card__title" id="inputTitle">Evidence</h2>
+        <p class="card__sub">One item per scan.</p>
 
-        <!-- Mode Toggle -->
-        <div class="flex bg-slate-950 p-1 rounded-xl mb-6 border border-slate-800">
-          <button id="tabMedia" type="button" onclick="setScanMode('media')" class="flex-1 py-2 text-xs font-semibold rounded-lg bg-indigo-600 text-white transition">Media (Image/Video/PDF)</button>
-          <button id="tabText" type="button" onclick="setScanMode('text')" class="flex-1 py-2 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition">Raw Text</button>
+        <div class="segmented" role="tablist" aria-label="Input type" style="margin: 20px 0 16px;">
+          <button type="button" role="tab" id="tabMedia" aria-selected="true"></button>
+          <button type="button" role="tab" id="tabText" aria-selected="false"></button>
         </div>
 
-        <!-- Media Upload Box -->
-        <div id="mediaInputZone" onclick="document.getElementById('fileInput').click()" class="border-2 border-dashed border-slate-800 hover:border-indigo-500/60 rounded-2xl p-10 text-center cursor-pointer transition bg-slate-950/40 min-h-[220px] flex flex-col items-center justify-center">
-          <input id="fileInput" type="file" accept="image/*,video/*,application/pdf" class="hidden" onchange="handleFileSelect(event)" />
-          <p id="fileLabel" class="text-sm text-slate-400 font-medium">Click to select an Image, Video, or PDF<br/><span class="text-xs text-slate-500 mt-1 block">Supports PNG, JPG, MP4, WebM, PDF</span></p>
-        </div>
-
-        <!-- Raw Text Box -->
-        <div id="textInputZone" class="hidden">
-          <textarea id="rawTextInput" rows="8" placeholder="Paste article, message, or claim for synthetic linguistic & provenance analysis..." class="w-full p-4 rounded-xl bg-slate-950 border border-slate-800 text-sm text-slate-200 focus:outline-none focus:border-indigo-500"></textarea>
-        </div>
-      </div>
-
-      <button id="scanBtn" onclick="executeScan()" class="mt-6 w-full py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm transition shadow-lg shadow-indigo-600/20">
-        Run Forensic Analysis
-      </button>
-    </section>
-
-    <!-- Right Column: Forensic Telemetry & Verdict -->
-    <section class="lg:col-span-7 bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between shadow-xl">
-      <div>
-        <h2 class="text-xl font-bold text-white mb-6">Forensic Telemetry & Verdict</h2>
-
-        <!-- Score Cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-          <div class="bg-slate-950 border border-slate-800/80 rounded-xl p-5">
-            <span class="text-xs text-slate-400 block mb-1">AI / Manipulation Confidence</span>
-            <div id="aiScoreValue" class="text-3xl font-extrabold text-indigo-400">--%</div>
-            <div class="w-full bg-slate-800 h-2 rounded-full mt-3 overflow-hidden">
-              <div id="aiScoreBar" class="bg-indigo-500 h-full transition-all duration-500" style="width: 0%"></div>
+        <div id="mediaZone">
+          <input class="sr-only" id="fileInput" type="file" accept="image/*,video/*,application/pdf" tabindex="-1" />
+          <div class="dropzone" id="dropzone" role="button" tabindex="0" aria-label="Choose a file to scan">
+            <div>
+              <div class="dropzone__icon" id="dropIcon"></div>
+              <strong style="margin-top: 12px;">Drop a file here or browse</strong>
+              <span>PNG, JPG, MP4, WebM or PDF · up to 100 MB</span>
             </div>
           </div>
-
-          <div class="bg-slate-950 border border-slate-800/80 rounded-xl p-5">
-            <span class="text-xs text-slate-400 block mb-1">Harm & Privacy Risk</span>
-            <div id="harmScoreValue" class="text-3xl font-extrabold text-rose-400">--%</div>
-            <div class="w-full bg-slate-800 h-2 rounded-full mt-3 overflow-hidden">
-              <div id="harmScoreBar" class="bg-rose-500 h-full transition-all duration-500" style="width: 0%"></div>
+          <div class="file" id="filePreview" hidden>
+            <div class="file__thumb" id="fileThumb"></div>
+            <div class="file__meta">
+              <div class="file__name" id="fileName"></div>
+              <div class="file__size" id="fileSize"></div>
             </div>
+            <button class="icon-btn" type="button" id="removeFile" aria-label="Remove file"></button>
           </div>
         </div>
 
-        <!-- Adaptive Verdict Banner -->
-        <div id="verdictBox" class="rounded-xl p-4 border border-slate-800 bg-slate-950 mb-6">
-          <div id="verdictTitle" class="text-sm font-bold text-slate-300">Awaiting Telemetry Input</div>
-          <p id="verdictSummary" class="text-xs text-slate-400 mt-1">Upload a file or submit text on the left to generate a cryptographic SHA-256 hash and forensic verdict.</p>
+        <div id="textZone" hidden>
+          <label class="sr-only" for="rawText">Text to analyse</label>
+          <textarea class="textarea" id="rawText" placeholder="Paste a message, article or claim…"></textarea>
+          <p class="hint mono" id="charCount">0 characters</p>
         </div>
 
-        <!-- Detected Artifacts -->
-        <div class="bg-slate-950 border border-slate-800/80 rounded-xl p-5">
-          <div class="text-xs font-bold uppercase tracking-wider text-indigo-400 mb-3">Detected Artifacts</div>
-          <ul id="artifactList" class="text-xs text-slate-300 space-y-2 list-disc list-inside">
-            <li class="text-slate-500">No artifacts recorded yet.</li>
-          </ul>
+        <button class="btn btn--primary btn--lg btn--block" id="scanBtn" type="button" style="margin-top: 20px;">Run analysis</button>
+      </section>
+
+      <!-- Results -->
+      <section class="card" aria-labelledby="resultTitle" aria-live="polite">
+        <h2 class="sr-only" id="resultTitle">Result</h2>
+
+        <div class="empty" id="stateEmpty">
+          <div>
+            <svg class="empty__art" viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M46 8H22a6 6 0 0 0-6 6v52a6 6 0 0 0 6 6h36a6 6 0 0 0 6-6V26L46 8Z"/><path d="M46 8v18h18M28 42h24M28 54h14"/></svg>
+            <h3>No scan yet</h3>
+            <p>Add a file or some text, then run the analysis. Your verdict appears here.</p>
+          </div>
         </div>
 
-        <!-- Download Evidence Certificate Button Container -->
-        <div id="certificateActionContainer" class="mt-6 hidden">
-          <button onclick="generateEvidenceCertificate()" class="w-full py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm transition shadow-lg shadow-emerald-600/20 flex items-center justify-center gap-2 cursor-pointer">
-            📥 Download Cryptographic Evidence Certificate (PDF)
-          </button>
+        <div class="scanning" id="stateLoading" hidden>
+          <div>
+            <div class="scan-doc" style="margin: 0 auto;" aria-hidden="true"></div>
+            <h3 style="margin-top: 22px; font-size: 19px;">Analysing…</h3>
+            <p class="scanning__step" id="loadingStep">Computing SHA-256 fingerprint</p>
+          </div>
         </div>
 
-      </div>
+        <div id="stateResult" hidden>
+          <div class="verdict" id="verdict">
+            <div class="verdict__icon" id="verdictIcon"></div>
+            <div>
+              <div class="verdict__title" id="verdictTitle"></div>
+              <p class="verdict__text" id="verdictText"></p>
+            </div>
+          </div>
 
-      <div class="mt-6 text-right">
-        <a href="profile.html" class="text-xs text-indigo-400 hover:text-indigo-300 font-medium">View all past scans in My Vault →</a>
-      </div>
-    </section>
+          <div class="scores block">
+            <div class="score">
+              <div id="gaugeAi"></div>
+              <div>
+                <div class="score__label">Manipulation confidence</div>
+                <div class="score__note">How strongly the evidence points to AI generation or editing.</div>
+              </div>
+            </div>
+            <div class="score">
+              <div id="gaugeHarm"></div>
+              <div>
+                <div class="score__label">Harm &amp; privacy risk</div>
+                <div class="score__note">Potential for fraud or identity misuse if this content is trusted.</div>
+              </div>
+            </div>
+          </div>
 
+          <div class="block" id="metricsBlock" hidden>
+            <div class="eyebrow block__title">Forensic metrics</div>
+            <dl class="kv" id="metrics"></dl>
+          </div>
+
+          <div class="block">
+            <div class="eyebrow block__title">Findings</div>
+            <ul class="findings" id="findings"></ul>
+          </div>
+
+          <div class="block" id="actionsBlock" hidden>
+            <div class="eyebrow block__title">Recommended next steps</div>
+            <ul class="findings" id="actions"></ul>
+          </div>
+
+          <div class="block" id="hashBlock" hidden>
+            <div class="eyebrow block__title">SHA-256 fingerprint</div>
+            <div class="hash">
+              <code id="hashValue"></code>
+              <button class="icon-btn" type="button" id="copyHash" aria-label="Copy fingerprint"></button>
+            </div>
+          </div>
+
+          <div class="result-actions">
+            <button class="btn btn--safe" type="button" id="certBtn"></button>
+            <a class="btn btn--ghost" href="profile.html">View in vault</a>
+          </div>
+        </div>
+      </section>
+    </div>
   </main>
 
+  <footer id="footer"></footer>
+
   <script>
-    const API_URL = 'http://localhost:5000/api/scan';
-    let currentMode = 'media';
-    let selectedFile = null;
-    let lastScanResult = null;
+    (function () {
+      const $ = (id) => document.getElementById(id);
+      const MAX_BYTES = 100 * 1024 * 1024;
+      const LOADING_STEPS = [
+        'Computing SHA-256 fingerprint',
+        'Reading metadata and structure',
+        'Matching tampering signatures',
+        'Scoring risk'
+      ];
 
-    function setScanMode(mode) {
-      currentMode = mode;
-      const tabMedia = document.getElementById('tabMedia');
-      const tabText = document.getElementById('tabText');
-      const mediaZone = document.getElementById('mediaInputZone');
-      const textZone = document.getElementById('textInputZone');
+      let mode = 'media';
+      let selectedFile = null;
+      let thumbUrl = null;
+      let lastScan = null;
+      let stepTimer = null;
 
-      if (mode === 'media') {
-        tabMedia.className = "flex-1 py-2 text-xs font-semibold rounded-lg bg-indigo-600 text-white transition";
-        tabText.className = "flex-1 py-2 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition";
-        mediaZone.classList.remove('hidden');
-        textZone.classList.add('hidden');
-      } else {
-        tabText.className = "flex-1 py-2 text-xs font-semibold rounded-lg bg-indigo-600 text-white transition";
-        tabMedia.className = "flex-1 py-2 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition";
-        textZone.classList.remove('hidden');
-        mediaZone.classList.add('hidden');
-      }
-    }
+      // Static icons
+      $('tabMedia').innerHTML = `${VS.icon('upload')}File`;
+      $('tabText').innerHTML = `${VS.icon('text')}Text`;
+      $('dropIcon').innerHTML = VS.icon('upload');
+      $('removeFile').innerHTML = VS.icon('x');
+      $('copyHash').innerHTML = VS.icon('copy');
+      $('certBtn').innerHTML = `${VS.icon('download')}Download evidence certificate`;
+      $('gaugeAi').outerHTML = VS.gaugeHTML('gaugeAi');
+      $('gaugeHarm').outerHTML = VS.gaugeHTML('gaugeHarm');
 
-    function handleFileSelect(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-      selectedFile = file;
-      const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
-      const label = document.getElementById('fileLabel');
-      label.innerHTML = `<span class="text-emerald-400 font-semibold">Selected: ${file.name} (${sizeMB} MB)</span>`;
-    }
-
-    async function executeScan() {
-      const token = localStorage.getItem('verishield_token') || localStorage.getItem('token');
-      if (!token) {
-        alert('Please sign in first.');
-        window.location.href = 'auth.html';
-        return;
+      function setState(name) {
+        $('stateEmpty').hidden = name !== 'empty';
+        $('stateLoading').hidden = name !== 'loading';
+        $('stateResult').hidden = name !== 'result';
       }
 
-      const btn = document.getElementById('scanBtn');
-      btn.disabled = true;
-      btn.innerText = 'Analyzing Forensic Telemetry...';
+      /* ---------- Input ---------- */
 
-      try {
-        let res;
-        if (currentMode === 'media') {
-          if (!selectedFile) {
-            alert('Please select an image, video, or PDF file first.');
-            btn.disabled = false;
-            btn.innerText = 'Run Forensic Analysis';
-            return;
-          }
+      function setMode(next) {
+        mode = next;
+        $('tabMedia').setAttribute('aria-selected', String(next === 'media'));
+        $('tabText').setAttribute('aria-selected', String(next === 'text'));
+        $('mediaZone').hidden = next !== 'media';
+        $('textZone').hidden = next !== 'text';
+        if (next === 'text') $('rawText').focus();
+      }
+
+      $('tabMedia').addEventListener('click', () => setMode('media'));
+      $('tabText').addEventListener('click', () => setMode('text'));
+
+      function clearFile() {
+        selectedFile = null;
+        if (thumbUrl) { URL.revokeObjectURL(thumbUrl); thumbUrl = null; }
+        $('fileInput').value = '';
+        $('filePreview').hidden = true;
+        $('dropzone').hidden = false;
+      }
+
+      function selectFile(file) {
+        if (!file) return;
+        const ok = /^(image|video)\//.test(file.type) || file.type === 'application/pdf';
+        if (!ok) return VS.toast('That file type is not supported. Use an image, video or PDF.', 'danger');
+        if (file.size > MAX_BYTES) return VS.toast(`That file is ${VS.formatBytes(file.size)}. The limit is 100 MB.`, 'danger');
+
+        clearFile();
+        selectedFile = file;
+        const thumb = $('fileThumb');
+        if (file.type.startsWith('image/')) {
+          thumbUrl = URL.createObjectURL(file);
+          thumb.innerHTML = '';
+          const img = document.createElement('img');
+          img.src = thumbUrl;
+          img.alt = '';
+          thumb.appendChild(img);
+        } else {
+          thumb.innerHTML = VS.icon(file.type.startsWith('video/') ? 'video' : 'file');
+        }
+        $('fileName').textContent = file.name;
+        $('fileSize').textContent = `${VS.formatBytes(file.size)} · ${file.type || 'unknown type'}`;
+        $('filePreview').hidden = false;
+        $('dropzone').hidden = true;
+      }
+
+      const dropzone = $('dropzone');
+      dropzone.addEventListener('click', () => $('fileInput').click());
+      dropzone.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); $('fileInput').click(); }
+      });
+      $('fileInput').addEventListener('change', (e) => selectFile(e.target.files[0]));
+      $('removeFile').addEventListener('click', clearFile);
+
+      ['dragenter', 'dragover'].forEach((type) => dropzone.addEventListener(type, (e) => {
+        e.preventDefault();
+        dropzone.classList.add('is-drag');
+      }));
+      ['dragleave', 'drop'].forEach((type) => dropzone.addEventListener(type, (e) => {
+        e.preventDefault();
+        dropzone.classList.remove('is-drag');
+      }));
+      dropzone.addEventListener('drop', (e) => selectFile(e.dataTransfer.files[0]));
+
+      $('rawText').addEventListener('input', (e) => {
+        const n = e.target.value.length;
+        $('charCount').textContent = `${n.toLocaleString()} character${n === 1 ? '' : 's'}`;
+      });
+
+      /* ---------- Scan ---------- */
+
+      async function runScan() {
+        let request;
+        if (mode === 'media') {
+          if (!selectedFile) return VS.toast('Choose a file to scan first.', 'danger');
           const formData = new FormData();
           formData.append('file', selectedFile);
-
-          res = await fetch(`${API_URL}/media`, {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${token}` },
-            body: formData
-          });
+          request = { path: '/scan/media', options: { method: 'POST', formData } };
         } else {
-          const textVal = document.getElementById('rawTextInput').value.trim();
-          if (!textVal) {
-            alert('Please paste some text to analyze.');
-            btn.disabled = false;
-            btn.innerText = 'Run Forensic Analysis';
-            return;
-          }
-          res = await fetch(`${API_URL}/text`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({ text: textVal })
-          });
+          const text = $('rawText').value.trim();
+          if (!text) return VS.toast('Paste some text to analyse first.', 'danger');
+          request = { path: '/scan/text', options: { method: 'POST', body: { text } } };
         }
 
-        const data = await res.json();
-        if (!res.ok) {
-          alert(data.error || 'Scan failed');
-        } else {
-          renderTelemetry(data.scan || data);
+        const btn = $('scanBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span>Analysing…';
+        const previous = lastScan;
+        setState('loading');
+
+        let step = 0;
+        $('loadingStep').textContent = LOADING_STEPS[0];
+        stepTimer = setInterval(() => {
+          step = Math.min(step + 1, LOADING_STEPS.length - 1);
+          $('loadingStep').textContent = LOADING_STEPS[step];
+        }, 700);
+
+        try {
+          const data = await VS.api(request.path, request.options);
+          render(data.scan || data);
+        } catch (err) {
+          VS.toast(err.message, 'danger');
+          setState(previous ? 'result' : 'empty');
+        } finally {
+          clearInterval(stepTimer);
+          btn.disabled = false;
+          btn.textContent = 'Run analysis';
         }
-      } catch (err) {
-        alert('Server connection error.');
-      } finally {
-        btn.disabled = false;
-        btn.innerText = 'Run Forensic Analysis';
-      }
-    }
-
-    function renderTelemetry(payload) {
-      lastScanResult = payload;
-      const aiScore = payload.detectionPercentage ?? payload.aiProbability ?? payload.confidenceScore ?? payload.confidence ?? 0;
-      const harmScore = payload.riskPercentage ?? payload.harmRiskScore ?? payload.harmScore ?? payload.riskScore ?? 0;
-      const isManipulated = aiScore > 60 || harmScore > 65 || payload.status === 'MANIPULATED';
-
-      // Update numbers & progress bars
-      document.getElementById('aiScoreValue').innerText = `${aiScore}%`;
-      document.getElementById('aiScoreBar').style.width = `${aiScore}%`;
-      document.getElementById('harmScoreValue').innerText = `${harmScore}%`;
-      document.getElementById('harmScoreBar').style.width = `${harmScore}%`;
-
-      // Update adaptive verdict banner
-      const verdictBox = document.getElementById('verdictBox');
-      const verdictTitle = document.getElementById('verdictTitle');
-      const verdictSummary = document.getElementById('verdictSummary');
-
-      if (isManipulated) {
-        verdictBox.className = "rounded-xl p-4 border border-rose-800/80 bg-rose-950/30 mb-6";
-        verdictTitle.className = "text-sm font-bold text-rose-400";
-        verdictTitle.innerText = "⚠️ Synthetic / Deepfake Detected";
-      } else {
-        verdictBox.className = "rounded-xl p-4 border border-emerald-800/80 bg-emerald-950/30 mb-6";
-        verdictTitle.className = "text-sm font-bold text-emerald-400";
-        verdictTitle.innerText = "✓ Authentic / Verified Media";
       }
 
-      verdictSummary.innerText = payload.summary || payload.explanation || 'Forensic scan complete.';
+      $('scanBtn').addEventListener('click', runScan);
 
-      // Update artifact bullets
-      const list = document.getElementById('artifactList');
-      const artifacts = payload.artifacts || payload.detectedArtifacts || [];
-      if (artifacts.length > 0) {
-        list.innerHTML = artifacts.map(item => `<li>${item}</li>`).join('');
-      } else {
-        list.innerHTML = '<li class="text-slate-500">No anomalies recorded.</li>';
+      function listItems(el, items, fallback) {
+        el.innerHTML = '';
+        (items.length ? items : [fallback]).forEach((text) => {
+          const li = document.createElement('li');
+          li.textContent = text;
+          el.appendChild(li);
+        });
       }
 
-      // Unhide the Download Cryptographic Certificate button!
-      document.getElementById('certificateActionContainer').classList.remove('hidden');
-    }
+      function render(payload) {
+        lastScan = payload;
+        const s = VS.readScan(payload);
+        const tone = s.flagged ? 'danger' : 'safe';
 
-    function generateEvidenceCertificate() {
-      if (!lastScanResult) {
-        alert('No active scan data available to export.');
-        return;
+        $('verdict').dataset.tone = tone;
+        $('verdictIcon').innerHTML = VS.icon(s.flagged ? 'alert' : 'check');
+        $('verdictTitle').textContent = s.flagged ? 'Likely manipulated or synthetic' : 'No signs of manipulation';
+        $('verdictText').textContent = s.summary;
+
+        // Hash lines duplicate the fingerprint block below.
+        listItems($('findings'), s.artifacts.filter((a) => !/^SHA-256/i.test(a)), 'No anomalies recorded.');
+
+        $('actionsBlock').hidden = !s.actions.length;
+        listItems($('actions'), s.actions, '');
+
+        const m = s.metrics;
+        $('metricsBlock').hidden = !m;
+        if (m) {
+          $('metrics').innerHTML = [
+            ['Metadata integrity', m.metadataIntegrity],
+            ['Structural consistency', m.biometricConsistency],
+            ['Provenance', m.provenanceStatus]
+          ].filter(([, v]) => v).map(([k, v]) => `<div><dt>${k}</dt><dd>${VS.esc(v)}</dd></div>`).join('');
+        }
+
+        $('hashBlock').hidden = !s.hash;
+        $('hashValue').textContent = s.hash;
+
+        setState('result');
+        $('stateResult').classList.remove('rise');
+        void $('stateResult').offsetWidth;
+        $('stateResult').classList.add('rise');
+
+        // Let the result paint before the gauges animate from zero.
+        VS.resetGauge($('gaugeAi'));
+        VS.resetGauge($('gaugeHarm'));
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          VS.setGauge($('gaugeAi'), s.ai, VS.scoreTone(s.ai), 'Manipulation confidence');
+          VS.setGauge($('gaugeHarm'), s.harm, VS.scoreTone(s.harm), 'Harm and privacy risk');
+        }));
       }
 
-      const r = lastScanResult;
-      const aiScore = r.detectionPercentage ?? r.aiProbability ?? r.confidenceScore ?? 0;
-      const harmScore = r.riskPercentage ?? r.harmRiskScore ?? r.harmScore ?? 0;
-      const isManipulated = aiScore > 60 || harmScore > 65 || r.status === 'MANIPULATED';
-      const verdictText = isManipulated ? 'HIGH-RISK SYNTHETIC / TAMPERED' : 'AUTHENTIC / VERIFIED DOCUMENT';
-      const colorTheme = isManipulated ? '#e11d48' : '#059669';
-      const timestamp = r.createdAt ? new Date(r.createdAt).toUTCString() : new Date().toUTCString();
-      const hashVal = r.sha256Hash || r.fileHash || r.hash || 'N/A';
-      const docName = r.contentName || r.fileName || r.originalName || 'Identity_Document.pdf';
+      $('copyHash').addEventListener('click', () => VS.copy($('hashValue').textContent, 'Fingerprint copied'));
 
-      const docDefinition = {
-        pageSize: 'A4',
-        pageMargins: [40, 40, 40, 40],
-        background: function(currentPage, pageSize) {
-          return {
-            canvas: [
-              { type: 'rect', x: 0, y: 0, w: pageSize.width, h: pageSize.height, color: '#f8fafc' }
-            ]
-          };
-        },
-        content: [
-          {
-            table: {
-              widths: ['*'],
-              body: [
-                [
-                  {
-                    fillColor: '#0f172a',
-                    margin: [15, 15, 15, 15],
-                    stack: [
-                      { text: 'VERISHIELD AI FORENSIC VAULT', color: '#818cf8', fontSize: 10, bold: true },
-                      { text: 'Cryptographic Evidence Certificate', color: '#ffffff', fontSize: 20, bold: true, margin: [0, 4, 0, 0] },
-                      { text: 'Official Document Authenticity & Tamper-Evident Report', color: '#94a3b8', fontSize: 10, margin: [0, 2, 0, 0] }
-                    ]
-                  }
-                ]
-              ]
-            },
-            layout: 'noBorders'
-          },
-          { text: '', margin: [0, 10] },
-          {
-            table: {
-              widths: [130, '*'],
-              body: [
-                [{ text: 'Target Document:', bold: true, color: '#475569' }, { text: docName, color: '#0f172a', bold: true }],
-                [{ text: 'Evaluation Type:', bold: true, color: '#475569' }, { text: 'ID / Certificate / Institutional Document Verification', color: '#0f172a' }],
-                [{ text: 'Analysis Timestamp:', bold: true, color: '#475569' }, { text: timestamp, color: '#0f172a' }],
-                [{ text: 'Forensic Engine:', bold: true, color: '#475569' }, { text: 'VeriShield Deepfake & C2PA Provenance Core v2.4', color: '#0f172a' }]
-              ]
-            },
-            layout: 'lightHorizontalLines'
-          },
-          { text: '', margin: [0, 10] },
-          {
-            table: {
-              widths: ['*'],
-              body: [
-                [
-                  {
-                    fillColor: isManipulated ? '#fff1f2' : '#ecfdf5',
-                    borderColor: colorTheme,
-                    border: [true, true, true, true],
-                    margin: [15, 12, 15, 12],
-                    stack: [
-                      { text: 'FINAL FORENSIC VERDICT', color: colorTheme, fontSize: 9, bold: true },
-                      { text: verdictText, color: colorTheme, fontSize: 16, bold: true, margin: [0, 4, 0, 0] },
-                      { text: r.summary || r.explanation || 'Document evaluated successfully.', color: '#334155', fontSize: 10, margin: [0, 6, 0, 0] }
-                    ]
-                  }
-                ]
-              ]
-            }
-          },
-          { text: '', margin: [0, 10] },
-          {
-            columns: [
-              {
-                width: '*',
-                stack: [
-                  { text: 'SYNTHETIC / AI PROBABILITY', fontSize: 9, bold: true, color: '#64748b' },
-                  { text: `${aiScore}%`, fontSize: 24, bold: true, color: '#4f46e5', margin: [0, 2, 0, 0] },
-                  { text: 'Confidence metric indicating anomaly or generative alteration density.', fontSize: 8, color: '#94a3b8' }
+      /* ---------- Evidence certificate (PDF) ---------- */
+
+      $('certBtn').addEventListener('click', () => {
+        if (!lastScan) return;
+        if (typeof pdfMake === 'undefined') {
+          return VS.toast('The PDF generator is still loading. Try again in a moment.', 'danger');
+        }
+
+        const s = VS.readScan(lastScan);
+        const color = s.flagged ? '#e11d48' : '#059669';
+        const kinds = { pdf: 'PDF document', image: 'Image', video: 'Video', text: 'Text snippet' };
+        const timestamp = (s.date ? new Date(s.date) : new Date()).toUTCString();
+        const banner = (stack, fill) => ({
+          table: { widths: ['*'], body: [[{ fillColor: fill, margin: [15, 14, 15, 14], stack }]] },
+          layout: 'noBorders'
+        });
+        const gap = (h) => ({ text: '', margin: [0, h] });
+
+        const doc = {
+          pageSize: 'A4',
+          pageMargins: [40, 40, 40, 40],
+          background: (page, size) => ({ canvas: [{ type: 'rect', x: 0, y: 0, w: size.width, h: size.height, color: '#f8fafc' }] }),
+          content: [
+            banner([
+              { text: 'VERISHIELD AI', color: '#a5a3ff', fontSize: 10, bold: true },
+              { text: 'Evidence Certificate', color: '#ffffff', fontSize: 20, bold: true, margin: [0, 4, 0, 0] },
+              { text: 'Forensic scan report with SHA-256 fingerprint', color: '#94a3b8', fontSize: 10, margin: [0, 2, 0, 0] }
+            ], '#0f172a'),
+            gap(10),
+            {
+              table: {
+                widths: [130, '*'],
+                body: [
+                  [{ text: 'Item scanned', bold: true, color: '#475569' }, { text: s.name, color: '#0f172a', bold: true }],
+                  [{ text: 'Type', bold: true, color: '#475569' }, { text: kinds[s.type] || s.type, color: '#0f172a' }],
+                  [{ text: 'Scanned at', bold: true, color: '#475569' }, { text: timestamp, color: '#0f172a' }]
                 ]
               },
-              {
-                width: '*',
-                stack: [
+              layout: 'lightHorizontalLines'
+            },
+            gap(10),
+            banner([
+              { text: 'VERDICT', color, fontSize: 9, bold: true },
+              { text: s.flagged ? 'LIKELY MANIPULATED OR SYNTHETIC' : 'NO SIGNS OF MANIPULATION', color, fontSize: 16, bold: true, margin: [0, 4, 0, 0] },
+              { text: s.summary, color: '#334155', fontSize: 10, margin: [0, 6, 0, 0] }
+            ], s.flagged ? '#fff1f2' : '#ecfdf5'),
+            gap(10),
+            {
+              columns: [
+                { width: '*', stack: [
+                  { text: 'MANIPULATION CONFIDENCE', fontSize: 9, bold: true, color: '#64748b' },
+                  { text: `${s.ai}%`, fontSize: 24, bold: true, color: '#4f46e5', margin: [0, 2, 0, 0] }
+                ] },
+                { width: '*', stack: [
                   { text: 'HARM & PRIVACY RISK', fontSize: 9, bold: true, color: '#64748b' },
-                  { text: `${harmScore}%`, fontSize: 24, bold: true, color: '#e11d48', margin: [0, 2, 0, 0] },
-                  { text: 'Risk index evaluating identity theft & metadata modification.', fontSize: 8, color: '#94a3b8' }
-                ]
-              }
-            ]
-          },
-          { text: '', margin: [0, 15] },
-          {
-            table: {
-              widths: ['*'],
-              body: [
-                [
-                  {
-                    fillColor: '#f1f5f9',
-                    margin: [12, 12, 12, 12],
-                    stack: [
-                      { text: 'CRYPTOGRAPHIC SHA-256 DIGITAL SEAL', fontSize: 9, bold: true, color: '#475569' },
-                      { text: hashVal, fontSize: 9, bold: true, color: '#0f172a', margin: [0, 4, 0, 0] },
-                      { text: 'This cryptographic hash permanently links this report to the analyzed file. Any alteration to the original document will invalidate this signature.', fontSize: 8, color: '#64748b', margin: [0, 4, 0, 0] }
-                    ]
-                  }
-                ]
+                  { text: `${s.harm}%`, fontSize: 24, bold: true, color: '#e11d48', margin: [0, 2, 0, 0] }
+                ] }
               ]
             },
-            layout: 'noBorders'
-          },
-          { text: '', margin: [0, 15] },
-          { text: 'Recommended Action Protocol', fontSize: 12, bold: true, color: '#0f172a', margin: [0, 0, 0, 5] },
-          {
-            ul: [
-              'Attach this cryptographic certificate directly to institutional dispute forms or HR verifications.',
-              'Preserve the SHA-256 fingerprint in case formal cybercrime portal (1930) reporting is required.',
-              'Verify document issuer credentials independently if confidence scores border on suspicious.'
-            ],
-            fontSize: 9,
-            color: '#334155',
-            margin: [0, 0, 0, 20]
-          },
-          {
-            columns: [
-              { text: 'VeriShield AI Forensic Platform\nImmutable Evidence Ledger', fontSize: 8, color: '#94a3b8' },
-              { text: 'Authorized Digital Certificate\nPage 1 of 1', fontSize: 8, color: '#94a3b8', alignment: 'right' }
-            ]
-          }
-        ]
-      };
+            gap(12),
+            banner([
+              { text: 'SHA-256 FINGERPRINT', fontSize: 9, bold: true, color: '#475569' },
+              { text: s.hash || 'N/A', fontSize: 9, bold: true, color: '#0f172a', margin: [0, 4, 0, 0] },
+              { text: 'This hash identifies the exact content that was scanned. Any change to the original produces a different hash.', fontSize: 8, color: '#64748b', margin: [0, 4, 0, 0] }
+            ], '#f1f5f9'),
+            gap(12),
+            { text: 'Findings', fontSize: 12, bold: true, color: '#0f172a', margin: [0, 0, 0, 5] },
+            { ul: s.artifacts.length ? s.artifacts : ['No anomalies recorded.'], fontSize: 9, color: '#334155', margin: [0, 0, 0, 14] },
+            ...(s.actions.length ? [
+              { text: 'Recommended next steps', fontSize: 12, bold: true, color: '#0f172a', margin: [0, 0, 0, 5] },
+              { ul: s.actions, fontSize: 9, color: '#334155', margin: [0, 0, 0, 14] }
+            ] : []),
+            { text: 'Generated by VeriShield AI. Verdicts are heuristic indicators and should be verified independently before they are relied on.', fontSize: 8, color: '#94a3b8' }
+          ]
+        };
 
-      pdfMake.createPdf(docDefinition).download(`VeriShield_Evidence_Certificate_${Date.now()}.pdf`);
-    }
-
-    function logout() {
-      localStorage.removeItem('verishield_token');
-      localStorage.removeItem('token');
-      window.location.href = 'auth.html';
-    }
+        pdfMake.createPdf(doc).download(`VeriShield_Evidence_Certificate_${Date.now()}.pdf`);
+      });
+    })();
   </script>
 </body>
 </html>

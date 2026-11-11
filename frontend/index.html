@@ -1,267 +1,236 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VeriShield AI | Next-Gen Cybersecurity & Forensics Platform</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    @keyframes pulseGlow {
-      0%, 100% { opacity: 0.3; transform: scale(1); }
-      50% { opacity: 0.6; transform: scale(1.08); }
-    }
-    .glow-orb {
-      animation: pulseGlow 8s ease-in-out infinite;
-    }
-    .grid-pattern {
-      background-image: linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-                        linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-      background-size: 40px 40px;
-    }
-  </style>
+  <title>VeriShield AI — Know what's real before you trust it</title>
+  <meta name="description" content="Check documents, media, text and links for signs of tampering or fraud, and keep a SHA-256 fingerprinted record of every verdict." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 3 5.500 7v8c0 6.300 4.400 11.500 10.500 13.500C22.100 26.500 26.500 21.300 26.500 15V7L16 3Z' fill='%23928fff'/%3E%3Cpath d='m11 15.500 3.600 3.600L21.500 12' stroke='%23090b0f' stroke-width='2.600' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="app.js"></script>
 </head>
-<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col grid-pattern selection:bg-indigo-500 selection:text-white">
+<body>
 
-  <!-- Navbar -->
-  <nav class="border-b border-slate-800/80 bg-slate-900/80 backdrop-blur-md px-8 py-4 flex items-center justify-between sticky top-0 z-50">
-    <a href="index.html" class="flex items-center gap-3">
-      <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center font-bold text-white shadow-lg shadow-indigo-600/30">V</div>
-      <span class="text-xl font-extrabold tracking-tight text-white">VeriShield <span class="text-indigo-400">AI</span></span>
-    </a>
-    <div class="flex items-center gap-6 text-sm font-medium">
-      <a href="scanner.html" class="text-slate-200 hover:text-white transition">Workbench</a>
-      <a href="urlcheck.html" class="text-slate-200 hover:text-white transition">URL Intel</a>
-      <a href="profile.html" class="text-slate-200 hover:text-white transition">My Vault</a>
-      <a href="auth.html" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-lg shadow-indigo-600/20 transition">Sign In / Register</a>
-    </div>
-  </nav>
+  <header id="nav"></header>
+  <script>VS.mountNav('home');</script>
 
-  <!-- Hero Section -->
-  <section class="max-w-7xl mx-auto px-6 pt-20 pb-28 relative overflow-hidden flex flex-col items-center text-center lg:text-left lg:flex-row lg:justify-between w-full">
-    
-    <!-- Glowing background aura -->
-    <div class="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-600/15 rounded-full blur-[140px] pointer-events-none glow-orb"></div>
+  <main>
+    <!-- Hero -->
+    <section class="shell hero">
+      <div>
+        <span class="chip" data-tone="accent"><span class="dot dot--pulse"></span>Forensics · URL intel · Evidence vault</span>
 
-    <div class="lg:w-7/12 space-y-6 relative z-10">
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-950/80 border border-indigo-800/50 text-indigo-300 text-xs font-semibold tracking-wide">
-        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-        VeriShield Cryptographic Engine v3.5 Online
-      </div>
+        <h1>Know what's <span class="serif">real</span> before you trust it.</h1>
 
-      <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight text-white leading-[1.1]">
-        Next-Gen Forensics & <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-violet-400 to-pink-400">Threat Intelligence</span>
-      </h1>
-
-      <p class="text-base sm:text-lg text-slate-400 max-w-2xl mx-auto lg:mx-0">
-        Empower your defense systems against synthetic media manipulation, deepfake documents, credential harvesting, and fraudulent merchant URLs with lightning-fast heuristic evaluation.
-      </p>
-
-      <div class="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-4">
-        <a href="scanner.html" class="px-8 py-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm shadow-xl shadow-indigo-600/30 transition transform hover:-translate-y-0.5">
-          Launch Document Workbench →
-        </a>
-        <a href="#features" class="px-8 py-4 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-200 font-bold text-sm transition">
-          Explore Capabilities
-        </a>
-      </div>
-
-      <!-- Quick Metrics -->
-      <div class="grid grid-cols-3 gap-4 pt-10 border-t border-slate-800/80 max-w-lg mx-auto lg:mx-0">
-        <div>
-          <div class="text-2xl font-extrabold text-white">99.8%</div>
-          <div class="text-xs text-slate-400 mt-0.5">Detection Accuracy</div>
-        </div>
-        <div>
-          <div class="text-2xl font-extrabold text-indigo-400">&lt; 0.4s</div>
-          <div class="text-xs text-slate-400 mt-0.5">Analysis Latency</div>
-        </div>
-        <div>
-          <div class="text-2xl font-extrabold text-emerald-400">SHA-256</div>
-          <div class="text-xs text-slate-400 mt-0.5">Cryptographic Audit</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Hero Interactive Simulation Card -->
-    <div class="lg:w-5/12 mt-12 lg:mt-0 relative z-10 w-full">
-      <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 shadow-2xl backdrop-blur-xl relative">
-        <div class="absolute -top-3 right-6 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
-          Live Sandbox Preview
-        </div>
-
-        <div class="text-sm font-bold text-white mb-4 flex items-center gap-2">
-          <div class="w-2.5 h-2.5 rounded-full bg-indigo-500"></div>
-          Multimodal Threat Telemetry
-        </div>
-
-        <div class="space-y-3 font-mono text-xs text-left">
-          <div class="p-3 rounded-xl bg-slate-950 border border-slate-800/80 flex items-center justify-between">
-            <span class="text-slate-300 truncate max-w-[180px]">invoice_audit.pdf</span>
-            <span class="text-emerald-400 font-bold">SAFE (94%)</span>
-          </div>
-          <div class="p-3 rounded-xl bg-slate-950 border border-slate-800/80 flex items-center justify-between">
-            <span class="text-slate-300 truncate max-w-[180px]">blinkit-offers.net</span>
-            <span class="text-rose-400 font-bold">PHISHING (86%)</span>
-          </div>
-          <div class="p-3 rounded-xl bg-slate-950 border border-slate-800/80 flex items-center justify-between">
-            <span class="text-slate-300 truncate max-w-[180px]">id_card_scan.png</span>
-            <span class="text-amber-400 font-bold">SYNTHETIC</span>
-          </div>
-        </div>
-
-        <div class="mt-6 p-4 rounded-2xl bg-indigo-950/40 border border-indigo-900/50 flex items-center justify-between">
-          <div class="text-left">
-            <div class="text-xs font-bold text-indigo-300">Ready to test files?</div>
-            <div class="text-[11px] text-slate-400 mt-0.5">Upload PDFs, images, or examine links.</div>
-          </div>
-          <a href="scanner.html" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition shadow-md">
-            Start Now
-          </a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Scroll Down Indicator -->
-  <div class="text-center pb-12">
-    <a href="#features" class="inline-flex flex-col items-center text-xs text-slate-500 hover:text-indigo-400 transition">
-      <span>Scroll to explore modules</span>
-      <span class="mt-1 animate-bounce">↓</span>
-    </a>
-  </div>
-
-  <!-- Features Grid Section -->
-  <section id="features" class="max-w-7xl mx-auto px-6 py-20 border-t border-slate-900 w-full">
-    <div class="text-center max-w-3xl mx-auto mb-16">
-      <h2 class="text-xs font-bold uppercase tracking-widest text-indigo-400 mb-3">Enterprise Core Capabilities</h2>
-      <h3 class="text-3xl sm:text-4xl font-extrabold text-white">Comprehensive Threat Detection Ecosystem</h3>
-      <p class="text-slate-400 text-sm mt-3">Designed for full-stack security auditors, automated verification systems, and fraud prevention teams.</p>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-      
-      <!-- Feature 1 -->
-      <div class="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-8 hover:border-indigo-500/50 transition group">
-        <div class="w-12 h-12 rounded-xl bg-indigo-600/15 border border-indigo-500/30 flex items-center justify-center text-indigo-400 font-bold text-lg mb-6 group-hover:scale-110 transition">
-          📄
-        </div>
-        <h4 class="text-lg font-bold text-white mb-2">Document & PDF Forensics</h4>
-        <p class="text-xs text-slate-400 leading-relaxed mb-6">
-          Inspect ISO-32000 structure integrity, parse incremental save counts, and extract hidden tool signatures left behind by PDF editors or AI generators.
+        <p class="hero__lede">
+          VeriShield inspects documents, images, video, text and links for signs of tampering or fraud — then fingerprints every verdict so you can prove what you saw.
         </p>
-        <a href="scanner.html" class="text-xs font-semibold text-indigo-400 hover:text-indigo-300 flex items-center gap-1">
-          Open Workbench →
-        </a>
+
+        <form class="quick" id="quickForm" novalidate>
+          <label class="sr-only" for="quickUrl">Link to check</label>
+          <input id="quickUrl" type="text" inputmode="url" autocomplete="off" spellcheck="false" placeholder="Paste a link to check…" />
+          <button class="btn btn--primary" type="submit">Check link <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+        </form>
+        <p class="hero__alt">Got a file instead? <a href="scanner.html">Open the forensic workbench</a></p>
+
+        <dl class="facts">
+          <div><dt>SHA-256</dt><dd>fingerprint on every scan</dd></div>
+          <div><dt>100 MB</dt><dd>per image, video or PDF</dd></div>
+          <div><dt>4 inputs</dt><dd>files, media, text, links</dd></div>
+        </dl>
       </div>
 
-      <!-- Feature 2 -->
-      <div class="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-8 hover:border-indigo-500/50 transition group">
-        <div class="w-12 h-12 rounded-xl bg-violet-600/15 border border-violet-500/30 flex items-center justify-center text-violet-400 font-bold text-lg mb-6 group-hover:scale-110 transition">
-          🛡️
+      <!-- Looping sample report -->
+      <div class="card card--raised casefile" id="casefile" aria-label="Sample report">
+        <div class="casefile__bar">
+          <span class="eyebrow">Case file</span>
+          <span class="chip">Sample output</span>
         </div>
-        <h4 class="text-lg font-bold text-white mb-2">URL & Platform Intelligence</h4>
-        <p class="text-xs text-slate-400 leading-relaxed mb-6">
-          Evaluate e-commerce shop domains, promotional ads, and social media links against enterprise whitelists and structural typosquatting heuristics.
-        </p>
-        <a href="urlcheck.html" class="text-xs font-semibold text-indigo-400 hover:text-indigo-300 flex items-center gap-1">
-          Test URL Intel →
-        </a>
-      </div>
-
-      <!-- Feature 3 -->
-      <div class="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-8 hover:border-indigo-500/50 transition group">
-        <div class="w-12 h-12 rounded-xl bg-emerald-600/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-bold text-lg mb-6 group-hover:scale-110 transition">
-          🔐
-        </div>
-        <h4 class="text-lg font-bold text-white mb-2">Cryptographic Vault Storage</h4>
-        <p class="text-xs text-slate-400 leading-relaxed mb-6">
-          Permanently log every audit trail and verdict with secure SHA-256 hashes, accessible anytime through your centralized user vault history ledger.
-        </p>
-        <a href="profile.html" class="text-xs font-semibold text-indigo-400 hover:text-indigo-300 flex items-center gap-1">
-          View My Vault →
-        </a>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- Pre-Footer CTA Section -->
-  <section class="max-w-5xl mx-auto px-6 py-16 w-full text-center">
-    <div class="bg-gradient-to-r from-indigo-950/60 via-slate-900 to-violet-950/60 border border-indigo-500/30 rounded-3xl p-10 shadow-2xl relative overflow-hidden backdrop-blur-xl">
-      
-      <!-- Background glow effect -->
-      <div class="absolute inset-0 bg-indigo-600/10 blur-3xl pointer-events-none"></div>
-
-      <div class="relative z-10 space-y-4">
-        <h3 class="text-2xl sm:text-3xl font-extrabold text-white">Ready to Secure Your Digital Ecosystem?</h3>
-        <p class="text-slate-400 text-sm max-w-xl mx-auto">
-          Sign in with your account to unlock instant document forensics, deepfake detection, and URL threat intelligence.
-        </p>
-        <div class="flex flex-wrap items-center justify-center gap-4 pt-4">
-          <a href="scanner.html" onclick="requireAuth(event, 'scanner.html')" class="px-8 py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm shadow-lg shadow-indigo-600/30 transition">
-            Launch Workbench
-          </a>
-          <a href="auth.html" class="px-8 py-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-bold text-sm transition">
-            Sign In / Register
-          </a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- How It Works Architecture Section -->
-  <section class="max-w-7xl mx-auto px-6 py-20 border-t border-slate-900 w-full">
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-      <div class="space-y-6">
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-slate-300 text-xs font-semibold">
-          Robust Backend Architecture
-        </div>
-        <h3 class="text-3xl font-extrabold text-white">Engineered for Precision & Speed</h3>
-        <p class="text-slate-400 text-sm leading-relaxed">
-          Powered by a high-performance Express and MongoDB backend connected seamlessly to lightweight client interfaces. VeriShield AI evaluates structural file buffers and domain heuristics in milliseconds.
-        </p>
-        <div class="space-y-4 pt-2">
-          <div class="flex items-start gap-3">
-            <div class="w-6 h-6 rounded-full bg-indigo-600/20 text-indigo-400 flex items-center justify-center font-bold text-xs mt-0.5">✓</div>
-            <div>
-              <div class="text-sm font-bold text-white">JWT Token Authentication</div>
-              <div class="text-xs text-slate-400">Secure session handling with persistent login state across your modules.</div>
-            </div>
-          </div>
-          <div class="flex items-start gap-3">
-            <div class="w-6 h-6 rounded-full bg-indigo-600/20 text-indigo-400 flex items-center justify-center font-bold text-xs mt-0.5">✓</div>
-            <div>
-              <div class="text-sm font-bold text-white">Real-Time Heuristic Scoring</div>
-              <div class="text-xs text-slate-400">Instant breakdown of trust percentages, risk indexes, and anomaly flags.</div>
+        <div class="casefile__body">
+          <div class="scan-doc" aria-hidden="true"></div>
+          <div class="casefile__fade">
+            <div class="casefile__name" id="cfName">invoice_audit.pdf</div>
+            <div class="casefile__kind" id="cfKind">PDF document · 248 KB</div>
+            <div class="casefile__gauges">
+              <figure><div id="cfGaugeA"></div><figcaption id="cfLabelA">AI confidence</figcaption></figure>
+              <figure><div id="cfGaugeB"></div><figcaption id="cfLabelB">Harm risk</figcaption></figure>
             </div>
           </div>
         </div>
-      </div>
-
-      <div class="bg-slate-900/80 border border-slate-800 rounded-3xl p-8 shadow-xl">
-        <div class="text-xs font-bold uppercase tracking-wider text-indigo-400 mb-4">System Telemetry Stack</div>
-        <div class="space-y-3 font-mono text-xs">
-          <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 flex justify-between">
-            <span class="text-slate-400">Database Layer</span>
-            <span class="text-emerald-400 font-bold">MongoDB (Port 27017)</span>
-          </div>
-          <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 flex justify-between">
-            <span class="text-slate-400">REST API Gateway</span>
-            <span class="text-indigo-400 font-bold">Express.js (Port 5000)</span>
-          </div>
-          <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 flex justify-between">
-            <span class="text-slate-400">Frontend Architecture</span>
-            <span class="text-violet-400 font-bold">HTML5, Tailwind CSS, JS</span>
-          </div>
+        <div class="casefile__verdict casefile__fade">
+          <p id="cfNote">Metadata intact, no editing-tool signatures.</p>
+          <span class="chip" id="cfChip" data-tone="safe">Authentic</span>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Footer -->
-  <footer class="border-t border-slate-900 bg-slate-950 px-8 py-8 text-center text-xs text-slate-500 mt-auto">
-    VeriShield AI Cyber Intelligence Platform • Secured with End-to-End Vault Persistence
-  </footer>
+    <!-- Capabilities -->
+    <section class="shell section" id="features">
+      <div class="section__head reveal">
+        <span class="eyebrow eyebrow--accent">What it does</span>
+        <h2>Three tools, one <span class="serif">evidence trail</span>.</h2>
+        <p>Each tool gives you a score, a plain-language verdict and the specific signals behind it.</p>
+      </div>
 
+      <div class="features">
+        <article class="card feature reveal">
+          <div class="feature__icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5Z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg></div>
+          <h3>Document &amp; media forensics</h3>
+          <p>Upload an image, video or PDF, or paste raw text, and get a manipulation score in seconds.</p>
+          <ul>
+            <li><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>Finds AI-generator and editing-tool signatures in metadata</li>
+            <li><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>Scores manipulation confidence and harm risk</li>
+            <li><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>Exports a PDF evidence certificate</li>
+          </ul>
+          <a class="link" href="scanner.html">Open workbench <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </article>
+
+        <article class="card feature reveal">
+          <div class="feature__icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3A4 4 0 0 0 11 18.7l1-1"/></svg></div>
+          <h3>URL &amp; store intelligence</h3>
+          <p>Paste a shop link, ad or social post before you click “buy” or type a password.</p>
+          <ul>
+            <li><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>Checks the domain against known platforms</li>
+            <li><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>Spots scam keywords and lookalike domains</li>
+            <li><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>Explains every verdict in plain language</li>
+          </ul>
+          <a class="link" href="urlcheck.html">Check a link <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </article>
+
+        <article class="card feature reveal">
+          <div class="feature__icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="12" cy="12" r="3.2"/><path d="M12 8.8V7M12 17v-1.8M7 20v1.5M17 20v1.5"/></svg></div>
+          <h3>Evidence vault</h3>
+          <p>Every file and text scan is saved to your account, so the record is there when you need it.</p>
+          <ul>
+            <li><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>SHA-256 fingerprint ties each verdict to its file</li>
+            <li><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>Search and filter your past scans</li>
+            <li><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>Reopen findings and recommended actions</li>
+          </ul>
+          <a class="link" href="profile.html">View vault <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </article>
+      </div>
+    </section>
+
+    <!-- How it works -->
+    <section class="shell section--tight">
+      <div class="section__head reveal">
+        <span class="eyebrow eyebrow--accent">How it works</span>
+        <h2>From upload to evidence in three steps.</h2>
+      </div>
+      <div class="steps reveal">
+        <div class="step">
+          <span class="step__num">01</span>
+          <h3>Submit</h3>
+          <p>Drop in a file, paste text or enter a link. Files are hashed the moment they arrive.</p>
+        </div>
+        <div class="step">
+          <span class="step__num">02</span>
+          <h3>Inspect</h3>
+          <p>Metadata, structure and wording are checked against known tampering and scam patterns.</p>
+        </div>
+        <div class="step">
+          <span class="step__num">03</span>
+          <h3>Preserve</h3>
+          <p>Scores, findings and the fingerprint are logged to your vault and exportable as a certificate.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Verdict tiers -->
+    <section class="shell section">
+      <div class="section__head reveal">
+        <span class="eyebrow eyebrow--accent">Reading a verdict</span>
+        <h2>Clear enough to act on.</h2>
+        <p>Every result lands in one of three tiers, with the reasons listed underneath.</p>
+      </div>
+      <div class="tiers reveal">
+        <div class="tier">
+          <span class="chip" data-tone="safe"><span class="dot"></span>Safe</span>
+          <h3>Nothing suspicious found</h3>
+          <p>Metadata is intact, or the domain matches a known platform with no scam markers.</p>
+        </div>
+        <div class="tier">
+          <span class="chip" data-tone="warn"><span class="dot"></span>Suspicious</span>
+          <h3>Proceed with caution</h3>
+          <p>The source can't be verified. Check return policies and contact details before you pay.</p>
+        </div>
+        <div class="tier">
+          <span class="chip" data-tone="danger"><span class="dot"></span>Flagged</span>
+          <h3>Likely tampered or phishing</h3>
+          <p>Editing signatures, stripped metadata or scam patterns were detected. Don't share or pay.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="shell section--tight">
+      <div class="card cta reveal">
+        <div>
+          <h2>Check it before you <span class="serif">share it</span>.</h2>
+          <p>Create a free account to scan files and keep every verdict in your vault. Link checks work without one.</p>
+        </div>
+        <div class="cta__actions">
+          <a class="btn btn--primary btn--lg" href="scanner.html">Open the workbench</a>
+          <a class="btn btn--ghost btn--lg" href="auth.html?mode=register" id="ctaRegister">Create an account</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="footer"></footer>
+
+  <script>
+    (function () {
+      if (VS.getToken()) document.getElementById('ctaRegister').hidden = true;
+
+      // Hero quick check → hands the link to the URL Intel page.
+      document.getElementById('quickForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const value = document.getElementById('quickUrl').value.trim();
+        location.href = value ? `urlcheck.html?u=${encodeURIComponent(value)}` : 'urlcheck.html';
+      });
+
+      // Sample report card: cycles through three illustrative results.
+      const samples = [
+        { name: 'invoice_audit.pdf', kind: 'PDF document · 248 KB', a: 12, b: 9, labels: ['AI confidence', 'Harm risk'], invertA: false,
+          note: 'Metadata intact, no editing-tool signatures.', chip: 'Authentic', tone: 'safe' },
+        { name: 'blinkit-grocery-offers-sale.com', kind: 'Link · shopping ad', a: 18, b: 86, labels: ['Trust', 'Scam risk'], invertA: true,
+          note: 'Hyphen-stuffed lookalike domain with promo keywords.', chip: 'Phishing', tone: 'danger' },
+        { name: 'id_card_scan.png', kind: 'Image · 1.4 MB', a: 78, b: 71, labels: ['AI confidence', 'Harm risk'], invertA: false,
+          note: 'Editing-tool signature found in metadata.', chip: 'Flagged', tone: 'danger' }
+      ];
+
+      const card = document.getElementById('casefile');
+      document.getElementById('cfGaugeA').outerHTML = VS.gaugeHTML('cfGaugeA', true);
+      document.getElementById('cfGaugeB').outerHTML = VS.gaugeHTML('cfGaugeB', true);
+      const $ = (id) => document.getElementById(id);
+
+      function show(s) {
+        $('cfName').textContent = s.name;
+        $('cfKind').textContent = s.kind;
+        $('cfLabelA').textContent = s.labels[0];
+        $('cfLabelB').textContent = s.labels[1];
+        $('cfNote').textContent = s.note;
+        $('cfChip').textContent = s.chip;
+        $('cfChip').dataset.tone = s.tone;
+        VS.setGauge($('cfGaugeA'), s.a, VS.scoreTone(s.a, s.invertA), s.labels[0]);
+        VS.setGauge($('cfGaugeB'), s.b, VS.scoreTone(s.b), s.labels[1]);
+      }
+
+      show(samples[0]);
+      if (VS.reducedMotion()) { card.classList.add('is-done'); return; }
+
+      let i = 0;
+      setInterval(() => {
+        if (document.hidden) return;
+        i = (i + 1) % samples.length;
+        card.classList.add('is-swapping');
+        setTimeout(() => { show(samples[i]); card.classList.remove('is-swapping'); }, 300);
+      }, 4200);
+    })();
+  </script>
 </body>
 </html>
