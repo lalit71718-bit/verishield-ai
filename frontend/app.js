@@ -348,6 +348,22 @@
       nodes.forEach((n) => n.classList.add('is-in'));
       return;
     }
+    // Motion (vendor/motion.js) drives the reveal when the page loads it:
+    // siblings that enter together are staggered. Without it, the CSS
+    // transition on .reveal.is-in below does the same job unstaggered.
+    const M = window.Motion;
+    if (M && M.inView && M.animate) {
+      nodes.forEach((n) => { n.style.transition = 'none'; });
+      M.inView('.reveal', (el) => {
+        const peers = Array.from(el.parentElement.children).filter((c) => c.classList.contains('reveal'));
+        M.animate(el, { opacity: [0, 1], y: [18, 0] }, {
+          duration: 0.7,
+          delay: peers.indexOf(el) * 0.08,
+          ease: [0.22, 1, 0.36, 1]
+        });
+      }, { amount: 0.12 });
+      return;
+    }
     const io = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
