@@ -8,6 +8,8 @@ const scanSchema = new mongoose.Schema({
   detectionPercentage: { type: Number, required: true },
   riskPercentage: { type: Number, required: true },
   explanation: { type: String, required: true },
+  status: { type: String },
+  verdict: { type: String },
   artifacts: [{ type: String }],
   safeActions: [{ type: String }],
   scannedAt: { type: Date, default: Date.now }

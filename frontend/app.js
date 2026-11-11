@@ -316,12 +316,20 @@
     const ai = r.detectionPercentage ?? r.aiProbability ?? r.confidenceScore ?? r.confidence ?? 0;
     const harm = r.riskPercentage ?? r.harmRiskScore ?? r.harmScore ?? r.riskScore ?? 0;
     const flagged = r.isDeepfake ?? r.isSynthetic ?? (r.status === 'MANIPULATED' || ai > 60 || harm > 65);
+    const inconclusive = !flagged && (r.isInconclusive ?? r.status === 'INCONCLUSIVE');
+    const type = String(r.mediaType || r.fileType || r.inputType || 'media').toLowerCase();
+    const fallbackTitle = flagged ? 'Likely manipulated or synthetic' : inconclusive ? "Can't verify this image" : 'No signs of manipulation';
     return {
       ai,
       harm,
       flagged: !!flagged,
+      inconclusive: !!inconclusive,
+      tone: flagged ? 'danger' : inconclusive ? 'warn' : 'safe',
+      label: flagged ? 'Flagged' : inconclusive ? 'Unverified' : 'Clean',
+      // Image verdicts from the API say which kind of problem was found.
+      title: type === 'image' && r.verdict ? r.verdict : fallbackTitle,
       name: r.contentName || r.fileName || r.originalName || 'Untitled scan',
-      type: String(r.mediaType || r.fileType || r.inputType || 'media').toLowerCase(),
+      type,
       hash: r.sha256Hash || r.fileHash || r.hash || '',
       summary: r.summary || r.explanation || 'Forensic scan complete.',
       artifacts: r.artifacts || r.detectedArtifacts || [],

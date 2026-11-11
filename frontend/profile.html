@@ -44,6 +44,7 @@
       <div class="segmented" role="group" aria-label="Filter scans">
         <button type="button" data-filter="all" aria-pressed="true">All</button>
         <button type="button" data-filter="flagged" aria-pressed="false">Flagged</button>
+        <button type="button" data-filter="unverified" aria-pressed="false">Unverified</button>
         <button type="button" data-filter="clean" aria-pressed="false">Clean</button>
       </div>
       <div class="search">
@@ -106,7 +107,7 @@
         const list = (items) => items.map((t) => `<li>${esc(t)}</li>`).join('');
         const findings = s.artifacts.filter((a) => !/^SHA-256/i.test(a));
         return `
-          <details class="entry" data-flagged="${s.flagged}">
+          <details class="entry" data-tone="${s.tone}">
             <summary>
               <span class="entry__bar"></span>
               <div style="min-width: 0;">
@@ -117,7 +118,7 @@
                   ${s.hash ? `<span>${esc(s.hash.slice(0, 12))}…</span>` : ''}
                 </div>
               </div>
-              <span class="chip" data-tone="${s.flagged ? 'danger' : 'safe'}">${s.flagged ? 'Flagged' : 'Clean'}</span>
+              <span class="chip" data-tone="${s.tone}">${s.label}</span>
               <div class="entry__nums">
                 <div><b>${esc(s.ai)}%</b><span>Manipulation</span></div>
                 <div><b>${esc(s.harm)}%</b><span>Harm risk</span></div>
@@ -140,7 +141,7 @@
       function paint() {
         const q = query.toLowerCase();
         const visible = scans.filter((s) =>
-          (filter === 'all' || (filter === 'flagged') === s.flagged) &&
+          (filter === 'all' || filter === s.label.toLowerCase()) &&
           (!q || s.name.toLowerCase().includes(q) || s.hash.toLowerCase().includes(q))
         );
 
@@ -173,7 +174,7 @@
         const flagged = scans.filter((s) => s.flagged).length;
         $('statTotal').textContent = scans.length;
         $('statFlagged').textContent = flagged;
-        $('statClean').textContent = scans.length - flagged;
+        $('statClean').textContent = scans.filter((s) => s.tone === 'safe').length;
         $('statAvg').textContent = `${Math.round(scans.reduce((sum, s) => sum + Number(s.ai || 0), 0) / scans.length)}%`;
         $('stats').hidden = false;
         $('toolbar').hidden = false;
