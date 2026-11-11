@@ -2,7 +2,7 @@
 
 VeriShield AI checks documents, images, video, text and links for signs of tampering or fraud, and keeps a SHA-256 fingerprinted record of every verdict in a personal vault.
 
-**Live site:** https://YOUR-PROJECT.vercel.app  <!-- TODO: replace with your Vercel link -->
+**Live site:** https://verishield-ai-web.vercel.app
 
 > The live site hosts the pages only. Sign-in, scans and the vault need the backend, which currently runs on your own machine (see [Run it locally](#run-it-locally)).
 
