@@ -1,0 +1,8 @@
+# Secrets
+backend/.env
+.env
+.env.*
+!.env.example
+
+# User uploads (created at runtime by backend/routes/scanRoutes.js)
+backend/uploads/

@@ -1,13 +1,15 @@
 const express = require('express');
 const router = express.Router();
 const { analyzeUrl, getUserUrlScans } = require('../controllers/urlController');
-// Optional: include your auth middleware if you have one protecting routes
-// const auth = require('../middleware/auth'); 
+const protect = require('../middleware/authMiddleware');
+const { optionalAuth } = protect;
 
-router.post('/check', analyzeUrl);
-router.get('/history', getUserUrlScans);
+// Public, but saves the scan against the account when a valid token is sent
+router.post('/check', optionalAuth, analyzeUrl);
+// History is per-user and requires sign-in
+router.get('/history', protect, getUserUrlScans);
 
 // Also support root-level post for convenience
-router.post('/', analyzeUrl);
+router.post('/', optionalAuth, analyzeUrl);
 
 module.exports = router;

@@ -110,7 +110,10 @@ const analyzeUrl = async (req, res) => {
 
 const getUserUrlScans = async (req, res) => {
   try {
-    const query = req.user ? { $or: [{ user: req.user._id }, { userId: req.user._id }] } : {};
+    if (!req.user) {
+      return res.status(401).json({ error: 'Not authorized' });
+    }
+    const query = { $or: [{ user: req.user._id }, { userId: req.user._id }] };
     const urlScans = await UrlScan.find(query).sort({ createdAt: -1 });
     return res.status(200).json({ success: true, scans: urlScans, history: urlScans, data: urlScans });
   } catch (err) {

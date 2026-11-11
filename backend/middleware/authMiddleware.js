@@ -26,5 +26,23 @@ const protect = async (req, res, next) => {
   return res.status(401).json({ error: 'Not authorized, no token provided' });
 };
 
+// Attaches req.user when a valid Bearer token is present, but never rejects.
+// For public routes that should still record the signed-in user.
+const optionalAuth = async (req, res, next) => {
+  const header = req.headers.authorization;
+  if (header && header.startsWith('Bearer')) {
+    try {
+      const decoded = jwt.verify(header.split(' ')[1], process.env.JWT_SECRET || 'verishield_super_secret_key');
+      const userId = decoded.id || decoded._id || decoded.userId || (decoded.user && (decoded.user._id || decoded.user.id));
+      const user = await User.findById(userId).select('-password');
+      if (user) req.user = user;
+    } catch (error) {
+      // Missing/expired/invalid token: continue as an anonymous request
+    }
+  }
+  return next();
+};
+
 protect.protect = protect;
+protect.optionalAuth = optionalAuth;
 module.exports = protect;
