@@ -1,0 +1,23 @@
+# VeriShield AI
+
+> VeriShield AI is a web app that checks documents, images, video, text and links for signs of tampering or fraud, and keeps a SHA-256 fingerprinted record of every verdict in a personal vault.
+
+Verdicts come from rule-based checks on file structure, metadata and wording, plus an optional AI-image detection model. They are indicators, not legal proof.
+
+## Pages
+
+- [Home](https://verishield-ai-web.vercel.app/): What the app does, how it works and how to read a verdict.
+- [URL Intel](https://verishield-ai-web.vercel.app/url-check): Check whether a shop, ad or social link looks safe. No account needed.
+- [Forensic Workbench](https://verishield-ai-web.vercel.app/workbench): Scan an image, video, PDF or pasted text. Requires sign-in.
+- [Sign in](https://verishield-ai-web.vercel.app/sign-in): Sign in or create a free account.
+
+## What it detects
+
+- Images: AI-generator and editing-tool metadata (EXIF, XMP, IPTC, C2PA), missing camera provenance, standard AI output sizes.
+- PDFs: structural integrity and editing-tool signatures.
+- Text: known phishing and AI-boilerplate phrasing.
+- Links: scam keywords, lookalike domains, match against known platforms.
+
+## Source
+
+- [GitHub repository](https://github.com/lalit71718-bit/verishield-ai): Source code, setup instructions and API reference.

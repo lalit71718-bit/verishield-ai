@@ -102,7 +102,7 @@
 
   function toAuth(message) {
     if (message) { try { sessionStorage.setItem('verishield_flash', message); } catch (e) { /* ignore */ } }
-    location.replace(`auth.html?next=${encodeURIComponent(currentPage())}`);
+    location.replace(`sign-in.html?next=${encodeURIComponent(currentPage())}`);
   }
 
   /** Call in <head> on protected pages: bounces signed-out visitors to auth. */
@@ -193,9 +193,9 @@
   /* ---------- Nav & footer ---------- */
 
   const LINKS = [
-    { id: 'scanner', href: 'scanner.html', label: 'Workbench' },
-    { id: 'urlcheck', href: 'urlcheck.html', label: 'URL Intel' },
-    { id: 'profile', href: 'profile.html', label: 'Vault' }
+    { id: 'scanner', href: 'workbench.html', label: 'Workbench' },
+    { id: 'urlcheck', href: 'url-check.html', label: 'URL Intel' },
+    { id: 'profile', href: 'vault.html', label: 'Vault' }
   ];
 
   function mountNav(active) {
@@ -209,9 +209,9 @@
     ).join('');
 
     const account = signedIn
-      ? `<a class="nav__user" href="profile.html" title="Open your vault"><span class="avatar">${esc(initials(user))}</span><span>${esc((user && (user.name || user.email)) || 'Account')}</span></a>
+      ? `<a class="nav__user" href="vault.html" title="Open your vault"><span class="avatar">${esc(initials(user))}</span><span>${esc((user && (user.name || user.email)) || 'Account')}</span></a>
          <button class="btn btn--ghost btn--sm" type="button" data-action="logout">${icon('logout')}Sign out</button>`
-      : '<a class="btn btn--primary btn--sm" href="auth.html">Sign in</a>';
+      : '<a class="btn btn--primary btn--sm" href="sign-in.html">Sign in</a>';
 
     host.className = 'nav';
     host.innerHTML = `
@@ -257,9 +257,9 @@
       <div class="shell footer__inner">
         <span>VeriShield AI — verdicts are heuristic indicators, not legal proof. Verify independently before you act.</span>
         <nav aria-label="Footer">
-          <a href="scanner.html">Workbench</a>
-          <a href="urlcheck.html">URL Intel</a>
-          <a href="profile.html">Vault</a>
+          <a href="workbench.html">Workbench</a>
+          <a href="url-check.html">URL Intel</a>
+          <a href="vault.html">Vault</a>
         </nav>
       </div>`;
   }

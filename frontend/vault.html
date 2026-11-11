@@ -3,7 +3,24 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Vault — VeriShield AI</title>
+  <title>Evidence Vault — Your saved scans | VeriShield AI</title>
+  <meta name="description" content="Your private record of past scans, each with its verdict, findings and SHA-256 fingerprint." />
+  <link rel="canonical" href="https://verishield-ai-web.vercel.app/vault" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="VeriShield AI" />
+  <meta property="og:title" content="Evidence Vault — Your saved scans | VeriShield AI" />
+  <meta property="og:description" content="Your private record of past scans, each with its verdict, findings and SHA-256 fingerprint." />
+  <meta property="og:url" content="https://verishield-ai-web.vercel.app/vault" />
+  <meta property="og:image" content="https://verishield-ai-web.vercel.app/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="VeriShield AI — know what's real before you trust it" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Evidence Vault — Your saved scans | VeriShield AI" />
+  <meta name="twitter:description" content="Your private record of past scans, each with its verdict, findings and SHA-256 fingerprint." />
+  <meta name="twitter:image" content="https://verishield-ai-web.vercel.app/og-image.png" />
+  <meta name="theme-color" content="#090b0f" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 3 5.500 7v8c0 6.300 4.400 11.500 10.500 13.500C22.100 26.500 26.500 21.300 26.500 15V7L16 3Z' fill='%23928fff'/%3E%3Cpath d='m11 15.500 3.600 3.600L21.500 12' stroke='%23090b0f' stroke-width='2.600' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -23,12 +40,11 @@
         <div class="vault-id">
           <span class="avatar avatar--lg" id="avatar">V</span>
           <div>
-            <span class="eyebrow eyebrow--accent">Evidence vault</span>
-            <h1 id="userName">Your vault</h1>
-            <p id="userEmail"></p>
+            <h1>Evidence vault</h1>
+            <p><b id="userName"></b> <span id="userEmail"></span></p>
           </div>
         </div>
-        <a class="btn btn--primary" href="scanner.html">New scan</a>
+        <a class="btn btn--primary" href="workbench.html">New scan</a>
       </div>
 
       <dl class="stats" id="stats" hidden>
@@ -80,7 +96,7 @@
       function paintUser(user) {
         if (!user) return;
         $('avatar').textContent = VS.initials(user);
-        $('userName').textContent = user.name || 'Your vault';
+        $('userName').textContent = user.name || '';
         $('userEmail').textContent = user.email || '';
       }
 
@@ -168,7 +184,7 @@
 
         if (!scans.length) {
           return message('Your vault is empty', 'Scans you run in the workbench are saved here with their fingerprint.',
-            '<a class="btn btn--primary" href="scanner.html" style="margin-top: 18px;">Run your first scan</a>');
+            '<a class="btn btn--primary" href="workbench.html" style="margin-top: 18px;">Run your first scan</a>');
         }
 
         const flagged = scans.filter((s) => s.flagged).length;

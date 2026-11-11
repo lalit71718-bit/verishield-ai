@@ -4,13 +4,61 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>VeriShield AI — Know what's real before you trust it</title>
-  <meta name="description" content="Check documents, media, text and links for signs of tampering or fraud, and keep a SHA-256 fingerprinted record of every verdict." />
+  <meta name="description" content="Check documents, images, video, text and links for signs of tampering or fraud, and keep a SHA-256 fingerprinted record of every verdict." />
+  <link rel="canonical" href="https://verishield-ai-web.vercel.app/" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="VeriShield AI" />
+  <meta property="og:title" content="VeriShield AI — Know what's real before you trust it" />
+  <meta property="og:description" content="Check documents, images, video, text and links for signs of tampering or fraud, and keep a SHA-256 fingerprinted record of every verdict." />
+  <meta property="og:url" content="https://verishield-ai-web.vercel.app/" />
+  <meta property="og:image" content="https://verishield-ai-web.vercel.app/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="VeriShield AI — know what's real before you trust it" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="VeriShield AI — Know what's real before you trust it" />
+  <meta name="twitter:description" content="Check documents, images, video, text and links for signs of tampering or fraud, and keep a SHA-256 fingerprinted record of every verdict." />
+  <meta name="twitter:image" content="https://verishield-ai-web.vercel.app/og-image.png" />
+  <meta name="theme-color" content="#090b0f" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 3 5.500 7v8c0 6.300 4.400 11.500 10.500 13.500C22.100 26.500 26.500 21.300 26.500 15V7L16 3Z' fill='%23928fff'/%3E%3Cpath d='m11 15.500 3.600 3.600L21.500 12' stroke='%23090b0f' stroke-width='2.600' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
   <script src="app.js"></script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://verishield-ai-web.vercel.app/#website",
+        "url": "https://verishield-ai-web.vercel.app/",
+        "name": "VeriShield AI",
+        "description": "Check documents, images, video, text and links for signs of tampering or fraud."
+      },
+      {
+        "@type": "WebApplication",
+        "@id": "https://verishield-ai-web.vercel.app/#app",
+        "name": "VeriShield AI",
+        "url": "https://verishield-ai-web.vercel.app/",
+        "applicationCategory": "SecurityApplication",
+        "operatingSystem": "Any (web browser)",
+        "description": "Forensic checks for files, media, text and links, with a SHA-256 fingerprinted record of every verdict.",
+        "image": "https://verishield-ai-web.vercel.app/og-image.png",
+        "featureList": [
+          "AI-generated and edited image detection",
+          "PDF and text tampering checks",
+          "Link and online-store safety checks",
+          "Evidence vault with SHA-256 fingerprints",
+          "PDF evidence certificates"
+        ],
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+      }
+    ]
+  }
+  </script>
 </head>
 <body>
 
@@ -34,7 +82,7 @@
           <input id="quickUrl" type="text" inputmode="url" autocomplete="off" spellcheck="false" placeholder="Paste a link to check…" />
           <button class="btn btn--primary" type="submit">Check link <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
         </form>
-        <p class="hero__alt">Got a file instead? <a href="scanner.html">Open the forensic workbench</a></p>
+        <p class="hero__alt">Got a file instead? <a href="workbench.html">Open the forensic workbench</a></p>
 
         <dl class="facts">
           <div><dt>SHA-256</dt><dd>fingerprint on every scan</dd></div>
@@ -85,7 +133,7 @@
             <li><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>Scores manipulation confidence and harm risk</li>
             <li><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>Exports a PDF evidence certificate</li>
           </ul>
-          <a class="link" href="scanner.html">Open workbench <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <a class="link" href="workbench.html">Open workbench <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
         </article>
 
         <article class="card feature reveal">
@@ -97,7 +145,7 @@
             <li><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>Spots scam keywords and lookalike domains</li>
             <li><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>Explains every verdict in plain language</li>
           </ul>
-          <a class="link" href="urlcheck.html">Check a link <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <a class="link" href="url-check.html">Check a link <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
         </article>
 
         <article class="card feature reveal">
@@ -109,7 +157,7 @@
             <li><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>Search and filter your past scans</li>
             <li><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>Reopen findings and recommended actions</li>
           </ul>
-          <a class="link" href="profile.html">View vault <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <a class="link" href="vault.html">View vault <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
         </article>
       </div>
     </section>
@@ -173,8 +221,8 @@
           <p>Create a free account to scan files and keep every verdict in your vault. Link checks work without one.</p>
         </div>
         <div class="cta__actions">
-          <a class="btn btn--primary btn--lg" href="scanner.html">Open the workbench</a>
-          <a class="btn btn--ghost btn--lg" href="auth.html?mode=register" id="ctaRegister">Create an account</a>
+          <a class="btn btn--primary btn--lg" href="workbench.html">Open the workbench</a>
+          <a class="btn btn--ghost btn--lg" href="sign-in.html?mode=register" id="ctaRegister">Create an account</a>
         </div>
       </div>
     </section>
@@ -190,7 +238,7 @@
       document.getElementById('quickForm').addEventListener('submit', (e) => {
         e.preventDefault();
         const value = document.getElementById('quickUrl').value.trim();
-        location.href = value ? `urlcheck.html?u=${encodeURIComponent(value)}` : 'urlcheck.html';
+        location.href = value ? `url-check.html?u=${encodeURIComponent(value)}` : 'url-check.html';
       });
 
       // Sample report card: cycles through three illustrative results.

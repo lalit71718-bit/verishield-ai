@@ -959,14 +959,14 @@ dl { margin: 0; }
   background: radial-gradient(600px 400px at 0% 100%, var(--accent-soft), transparent 70%);
 }
 
-.auth__aside h1 { font-size: clamp(34px, 4.2vw, 54px); font-weight: 800; letter-spacing: -0.03em; }
+.auth__headline { font-family: var(--font-display); font-size: clamp(34px, 4.2vw, 54px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.08; text-wrap: balance; }
 .auth__points { display: grid; gap: 14px; margin-top: 30px; }
 .auth__points li { display: flex; gap: 12px; color: var(--muted); font-size: 15px; }
 .auth__points .icon { color: var(--safe); margin-top: 3px; }
 
 .auth__main { display: grid; place-items: center; padding: 40px 24px; }
 .auth__panel { width: 100%; max-width: 400px; }
-.auth__panel h2 { font-size: 30px; }
+.auth__panel h1 { font-size: 30px; }
 .auth__panel > p { color: var(--muted); margin-top: 8px; }
 .auth__form { margin-top: 26px; }
 .auth__foot { margin-top: 22px; font-size: 13px; color: var(--muted); text-align: center; }
@@ -986,6 +986,7 @@ dl { margin: 0; }
 .vault-id { display: flex; align-items: center; gap: 16px; min-width: 0; }
 .vault-id h1 { font-size: 26px; overflow-wrap: anywhere; }
 .vault-id p { color: var(--muted); font-size: 14px; overflow-wrap: anywhere; }
+.vault-id p b { color: var(--text); font-weight: 600; }
 
 .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 20px; }
 
@@ -1129,3 +1130,10 @@ dl { margin: 0; }
   .entry__body { padding: 4px 16px 18px; }
   .cta__actions, .cta__actions .btn { width: 100%; }
 }
+
+/* ---------- 404 ---------- */
+
+.notfound { display: grid; place-items: center; text-align: center; padding-block: 96px; }
+.notfound h1 { font-size: clamp(36px, 6vw, 64px); font-weight: 800; letter-spacing: -0.03em; margin-top: 16px; }
+.notfound p { color: var(--muted); font-size: 17px; margin-top: 16px; }
+.notfound__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 32px; }

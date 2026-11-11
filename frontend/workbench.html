@@ -3,7 +3,24 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Workbench — VeriShield AI</title>
+  <title>Forensic Workbench — Scan files for tampering | VeriShield AI</title>
+  <meta name="description" content="Upload an image, video or PDF, or paste text, to get a manipulation score, the signals behind it and a downloadable evidence certificate." />
+  <link rel="canonical" href="https://verishield-ai-web.vercel.app/workbench" />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="VeriShield AI" />
+  <meta property="og:title" content="Forensic Workbench — Scan files for tampering | VeriShield AI" />
+  <meta property="og:description" content="Upload an image, video or PDF, or paste text, to get a manipulation score, the signals behind it and a downloadable evidence certificate." />
+  <meta property="og:url" content="https://verishield-ai-web.vercel.app/workbench" />
+  <meta property="og:image" content="https://verishield-ai-web.vercel.app/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="VeriShield AI — know what's real before you trust it" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Forensic Workbench — Scan files for tampering | VeriShield AI" />
+  <meta name="twitter:description" content="Upload an image, video or PDF, or paste text, to get a manipulation score, the signals behind it and a downloadable evidence certificate." />
+  <meta name="twitter:image" content="https://verishield-ai-web.vercel.app/og-image.png" />
+  <meta name="theme-color" content="#090b0f" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 3 5.500 7v8c0 6.300 4.400 11.500 10.500 13.500C22.100 26.500 26.500 21.300 26.500 15V7L16 3Z' fill='%23928fff'/%3E%3Cpath d='m11 15.500 3.600 3.600L21.500 12' stroke='%23090b0f' stroke-width='2.600' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -11,8 +28,6 @@
   <link rel="stylesheet" href="styles.css" />
   <script src="app.js"></script>
   <script>VS.requireAuth();</script>
-  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 </head>
 <body>
 
@@ -136,7 +151,7 @@
 
           <div class="result-actions">
             <button class="btn btn--safe" type="button" id="certBtn"></button>
-            <a class="btn btn--ghost" href="profile.html">View in vault</a>
+            <a class="btn btn--ghost" href="vault.html">View in vault</a>
           </div>
         </div>
       </section>
@@ -214,7 +229,7 @@
           thumb.innerHTML = '';
           const img = document.createElement('img');
           img.src = thumbUrl;
-          img.alt = '';
+          img.alt = `Preview of ${file.name}`;
           thumb.appendChild(img);
         } else {
           thumb.innerHTML = VS.icon(file.type.startsWith('video/') ? 'video' : 'file');
@@ -349,10 +364,37 @@
 
       /* ---------- Evidence certificate (PDF) ---------- */
 
-      $('certBtn').addEventListener('click', () => {
+      // The PDF library is about 2 MB, so it is fetched only when a certificate is requested.
+      const PDF_SCRIPTS = [
+        'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js',
+        'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js'
+      ];
+      let pdfReady = null;
+
+      function loadPdfMake() {
+        if (!pdfReady) {
+          const load = (src) => new Promise((resolve, reject) => {
+            const el = document.createElement('script');
+            el.src = src;
+            el.onload = resolve;
+            el.onerror = () => reject(new Error('load failed'));
+            document.head.appendChild(el);
+          });
+          pdfReady = load(PDF_SCRIPTS[0]).then(() => load(PDF_SCRIPTS[1])).catch((err) => { pdfReady = null; throw err; });
+        }
+        return pdfReady;
+      }
+
+      $('certBtn').addEventListener('click', async () => {
         if (!lastScan) return;
-        if (typeof pdfMake === 'undefined') {
-          return VS.toast('The PDF generator is still loading. Try again in a moment.', 'danger');
+        const btn = $('certBtn');
+        btn.disabled = true;
+        try {
+          await loadPdfMake();
+        } catch (e) {
+          return VS.toast("Couldn't load the PDF generator. Check your connection and try again.", 'danger');
+        } finally {
+          btn.disabled = false;
         }
 
         const s = VS.readScan(lastScan);

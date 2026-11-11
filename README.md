@@ -86,10 +86,15 @@ verishield-ai/
     ├── styles.css                 Design tokens, components, page layouts
     ├── app.js                     Session, API client, nav, toasts, gauges
     ├── index.html                 Landing page with quick link check (public)
-    ├── auth.html                  Sign in and registration
-    ├── scanner.html               Forensic workbench (sign-in required)
-    ├── urlcheck.html              URL intel (public)
-    └── profile.html               Evidence vault (sign-in required)
+    ├── sign-in.html               Sign in and registration
+    ├── workbench.html             Forensic workbench (sign-in required)
+    ├── url-check.html             URL intel (public)
+    ├── vault.html                 Evidence vault (sign-in required)
+    ├── 404.html                   Not-found page
+    ├── vercel.json                Clean URLs, redirects from old page names, headers
+    ├── robots.txt, sitemap.xml    Search engine files
+    ├── llms.txt                   Site summary for AI assistants
+    └── og-image.png               Social share image
 ```
 
 ---
@@ -161,6 +166,8 @@ Base URL: `http://localhost:5000/api`. Protected routes expect `Authorization: B
 
 - **Frontend:** deployed on Vercel from the `frontend` folder (Root Directory `frontend`, Framework Preset "Other", no build command). It redeploys on every merge to `main`.
 - **Backend:** not hosted yet. The frontend calls `http://localhost:5000` by default, so the live site is fully functional only on a computer running the backend.
+- **Page addresses:** on Vercel the pages are served without `.html` (`/workbench`, `/url-check`, `/vault`, `/sign-in`). Old addresses redirect.
+- **Changing the domain:** the site address is written into the canonical and share tags of each page, `sitemap.xml`, `robots.txt` and `llms.txt`. Replace `verishield-ai-web.vercel.app` in `frontend/` if you add a custom domain.
 - **Pointing the frontend at a hosted API:** set `window.VERISHIELD_API_BASE` before `app.js` loads, or set the `verishield_api` key in the browser's localStorage.
 
 ---

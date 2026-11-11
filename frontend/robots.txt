@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://verishield-ai-web.vercel.app/sitemap.xml
