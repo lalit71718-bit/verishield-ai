@@ -3,176 +3,201 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <head>
-  <meta charset="UTF-8" />
-  <!-- 🛑 Auth Protection Guard -->
-  <script>
-    const activeToken = localStorage.getItem('verishield_token') || localStorage.getItem('token');
-    if (!activeToken) {
-      window.location.href = 'auth.html';
-    }
-  </script>
-  <title>VeriShield AI - My Vault</title>
-  ...
+  <title>Vault — VeriShield AI</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 3 5.500 7v8c0 6.300 4.400 11.500 10.500 13.500C22.100 26.500 26.500 21.300 26.500 15V7L16 3Z' fill='%23928fff'/%3E%3Cpath d='m11 15.500 3.600 3.600L21.500 12' stroke='%23090b0f' stroke-width='2.600' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="app.js"></script>
+  <script>VS.requireAuth();</script>
 </head>
-  <title>VeriShield AI | My Forensic Vault</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col">
+<body>
 
-  <!-- Navbar -->
-  <nav class="border-b border-slate-800 bg-slate-900/60 backdrop-blur px-8 py-4 flex items-center justify-between">
-  <a href="scanner.html" class="flex items-center gap-3">
-    <div class="w-9 h-9 rounded-lg bg-indigo-600 flex items-center justify-center font-bold text-white">V</div>
-    <span class="text-xl font-extrabold tracking-tight text-white">VeriShield <span class="text-indigo-400">AI</span></span>
-  </a>
-  <div class="flex items-center gap-6 text-sm font-medium">
-    <a href="scanner.html" class="text-slate-300 hover:text-white transition">Workbench</a>
-    <a href="urlcheck.html" class="text-indigo-400 font-semibold">URL Intel</a>
-    <a href="profile.html" class="text-slate-300 hover:text-white transition">My Vault</a>
-    <button onclick="logout()" class="px-4 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition">Sign Out</button>
-  </div>
-</nav>
+  <header id="nav"></header>
+  <script>VS.mountNav('profile');</script>
 
-  <!-- Main Content -->
-  <main class="max-w-5xl w-full mx-auto px-6 py-10 flex-1">
-    
-    <!-- User Vault Card -->
-    <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 mb-8 shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-      <div>
-        <h1 class="text-2xl font-extrabold text-white">User Vault</h1>
-        <p id="userDetails" class="text-sm text-slate-400 mt-1">Loading account details...</p>
+  <main class="shell">
+    <div class="page-head" style="padding-bottom: 0;">
+      <div class="card vault-head">
+        <div class="vault-id">
+          <span class="avatar avatar--lg" id="avatar">V</span>
+          <div>
+            <span class="eyebrow eyebrow--accent">Evidence vault</span>
+            <h1 id="userName">Your vault</h1>
+            <p id="userEmail"></p>
+          </div>
+        </div>
+        <a class="btn btn--primary" href="scanner.html">New scan</a>
       </div>
-      <div class="flex items-center gap-3">
-        <span id="scanCountBadge" class="px-3.5 py-1.5 rounded-xl bg-indigo-950 border border-indigo-800 text-indigo-300 text-xs font-bold">0 Scans Logged</span>
-        <a href="scanner.html" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition">+ New Scan</a>
-      </div>
-    </section>
 
-    <!-- Past Forensic Scans Ledger -->
-    <section>
-      <h2 class="text-lg font-bold text-white mb-4">Past Forensic Scans Ledger</h2>
-      <div id="historyContainer" class="space-y-4">
-        <p class="text-sm text-slate-400">Loading history...</p>
-      </div>
-    </section>
+      <dl class="stats" id="stats" hidden>
+        <div class="stat"><dt>Scans logged</dt><dd id="statTotal">0</dd></div>
+        <div class="stat" data-tone="danger"><dt>Flagged</dt><dd id="statFlagged">0</dd></div>
+        <div class="stat" data-tone="safe"><dt>Clean</dt><dd id="statClean">0</dd></div>
+        <div class="stat"><dt>Avg. manipulation confidence</dt><dd id="statAvg">0%</dd></div>
+      </dl>
+    </div>
 
+    <div class="toolbar" id="toolbar" hidden>
+      <h2>Scan ledger</h2>
+      <div class="segmented" role="group" aria-label="Filter scans">
+        <button type="button" data-filter="all" aria-pressed="true">All</button>
+        <button type="button" data-filter="flagged" aria-pressed="false">Flagged</button>
+        <button type="button" data-filter="clean" aria-pressed="false">Clean</button>
+      </div>
+      <div class="search">
+        <label class="sr-only" for="searchInput">Search scans</label>
+        <span id="searchIcon"></span>
+        <input class="input" id="searchInput" type="search" placeholder="Search name or hash" autocomplete="off" />
+      </div>
+    </div>
+
+    <div class="ledger" id="ledger" aria-live="polite" style="margin-top: 28px;">
+      <div class="skeleton"></div>
+      <div class="skeleton"></div>
+      <div class="skeleton"></div>
+    </div>
   </main>
 
+  <footer id="footer"></footer>
+
   <script>
-    const AUTH_API = 'http://localhost:5000/api/auth';
-    const SCAN_API = 'http://localhost:5000/api/scan';
+    (function () {
+      const $ = (id) => document.getElementById(id);
+      const esc = VS.esc;
+      const TYPE_ICONS = { pdf: 'file', image: 'image', video: 'video', text: 'text' };
 
-    async function loadProfileAndHistory() {
-      const token = localStorage.getItem('verishield_token') || localStorage.getItem('token');
-      if (!token) {
-        window.location.href = 'auth.html';
-        return;
+      let scans = [];
+      let filter = 'all';
+      let query = '';
+
+      $('searchIcon').outerHTML = VS.icon('search');
+
+      /* ---------- Account ---------- */
+
+      function paintUser(user) {
+        if (!user) return;
+        $('avatar').textContent = VS.initials(user);
+        $('userName').textContent = user.name || 'Your vault';
+        $('userEmail').textContent = user.email || '';
       }
 
-      // 1. Load User Details (from API or localStorage fallback)
-      const userDetailsEl = document.getElementById('userDetails');
-      const storedUser = JSON.parse(localStorage.getItem('verishield_user') || localStorage.getItem('user') || 'null');
+      paintUser(VS.getUser());
+      VS.api('/auth/profile')
+        .then((data) => paintUser(data && (data.user || data)))
+        .catch(() => { /* stored details are already shown */ });
 
-      try {
-        const profRes = await fetch(`${AUTH_API}/profile`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        if (profRes.ok) {
-          const profData = await profRes.json();
-          const u = profData.user || profData;
-          userDetailsEl.innerHTML = `<span class="text-white font-semibold">${u.name || 'Forensic Investigator'}</span> &bull; <span class="text-indigo-400">${u.email || ''}</span>`;
-        } else if (storedUser && (storedUser.name || storedUser.email)) {
-          userDetailsEl.innerHTML = `<span class="text-white font-semibold">${storedUser.name || 'Investigator'}</span> &bull; <span class="text-indigo-400">${storedUser.email || ''}</span>`;
-        } else {
-          userDetailsEl.innerText = 'Authenticated VeriShield Investigator';
-        }
-      } catch (e) {
-        if (storedUser) {
-          userDetailsEl.innerHTML = `<span class="text-white font-semibold">${storedUser.name || 'Investigator'}</span> &bull; <span class="text-indigo-400">${storedUser.email || ''}</span>`;
-        } else {
-          userDetailsEl.innerText = 'Authenticated VeriShield Investigator';
-        }
+      /* ---------- Ledger ---------- */
+
+      function message(title, text, action) {
+        $('ledger').innerHTML = `
+          <div class="card empty" style="min-height: 280px;">
+            <div>
+              <svg class="empty__art" viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="10" y="14" width="60" height="52" rx="8"/><circle cx="40" cy="40" r="10"/><path d="M40 30v-5M40 55v-5M22 66v5M58 66v5"/></svg>
+              <h3>${esc(title)}</h3>
+              <p>${esc(text)}</p>
+              ${action || ''}
+            </div>
+          </div>`;
       }
 
-      // 2. Load Forensic Scan History Ledger
-      const container = document.getElementById('historyContainer');
-      const badge = document.getElementById('scanCountBadge');
+      function entryHTML(s) {
+        const list = (items) => items.map((t) => `<li>${esc(t)}</li>`).join('');
+        const findings = s.artifacts.filter((a) => !/^SHA-256/i.test(a));
+        return `
+          <details class="entry" data-flagged="${s.flagged}">
+            <summary>
+              <span class="entry__bar"></span>
+              <div style="min-width: 0;">
+                <div class="entry__name">${esc(s.name)}</div>
+                <div class="entry__meta">
+                  <span>${esc(s.type.toUpperCase())}</span>
+                  ${s.date ? `<span>${esc(VS.formatDate(s.date))}</span>` : ''}
+                  ${s.hash ? `<span>${esc(s.hash.slice(0, 12))}…</span>` : ''}
+                </div>
+              </div>
+              <span class="chip" data-tone="${s.flagged ? 'danger' : 'safe'}">${s.flagged ? 'Flagged' : 'Clean'}</span>
+              <div class="entry__nums">
+                <div><b>${esc(s.ai)}%</b><span>Manipulation</span></div>
+                <div><b>${esc(s.harm)}%</b><span>Harm risk</span></div>
+              </div>
+              ${VS.icon('chevron', 'entry__chev')}
+            </summary>
+            <div class="entry__body">
+              <div class="block">
+                <div class="eyebrow block__title">Summary</div>
+                <p style="font-size: 14px;">${esc(s.summary)}</p>
+              </div>
+              ${findings.length ? `<div class="block"><div class="eyebrow block__title">Findings</div><ul class="findings">${list(findings)}</ul></div>` : ''}
+              ${s.actions.length ? `<div class="block"><div class="eyebrow block__title">Recommended next steps</div><ul class="findings">${list(s.actions)}</ul></div>` : ''}
+              ${s.hash ? `<div class="block"><div class="eyebrow block__title">SHA-256 fingerprint</div>
+                <div class="hash"><code>${esc(s.hash)}</code><button class="icon-btn" type="button" data-copy="${esc(s.hash)}" aria-label="Copy fingerprint">${VS.icon('copy')}</button></div></div>` : ''}
+            </div>
+          </details>`;
+      }
 
-      try {
-        const res = await fetch(`${SCAN_API}/history`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        const data = await res.json();
+      function paint() {
+        const q = query.toLowerCase();
+        const visible = scans.filter((s) =>
+          (filter === 'all' || (filter === 'flagged') === s.flagged) &&
+          (!q || s.name.toLowerCase().includes(q) || s.hash.toLowerCase().includes(q))
+        );
 
-        // Safely extract array whether backend returns [...], { scans: [...] }, or { history: [...] }
-        const historyList = Array.isArray(data)
-          ? data
-          : (data.scans || data.history || data.data || []);
+        if (!visible.length) {
+          return message('No scans match', 'Try a different filter or search term.');
+        }
+        $('ledger').innerHTML = visible.map(entryHTML).join('');
+      }
 
-        badge.innerText = `${historyList.length} ${historyList.length === 1 ? 'Scan' : 'Scans'} Logged`;
-
-        if (historyList.length === 0) {
-          container.innerHTML = `
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-8 text-center">
-              <p class="text-sm text-slate-400">No forensic scans recorded in your vault yet.</p>
-              <a href="scanner.html" class="inline-block mt-4 px-4 py-2 rounded-xl bg-indigo-600 text-white text-xs font-bold">Run Your First Scan →</a>
-            </div>`;
+      async function load() {
+        $('ledger').innerHTML = '<div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>';
+        try {
+          const data = await VS.api('/scan/history');
+          const list = Array.isArray(data) ? data : (data.scans || data.history || data.data || []);
+          scans = list.map(VS.readScan).sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+        } catch (err) {
+          $('stats').hidden = true;
+          $('toolbar').hidden = true;
+          message("Couldn't load your vault", err.message, '<button class="btn btn--ghost" type="button" id="retry" style="margin-top: 18px;">Try again</button>');
+          const retry = $('retry');
+          if (retry) retry.addEventListener('click', load);
           return;
         }
 
-        container.innerHTML = historyList.map(item => {
-          const aiScore = item.detectionPercentage ?? item.aiProbability ?? item.confidenceScore ?? 0;
-          const harmScore = item.riskPercentage ?? item.harmRiskScore ?? item.harmScore ?? 0;
-          const isManipulated = aiScore > 60 || harmScore > 65 || item.status === 'MANIPULATED';
-          const title = item.contentName || item.fileName || item.originalName || 'Forensic Scan Entry';
-          const type = (item.mediaType || item.fileType || item.inputType || 'media').toUpperCase();
-          const hash = item.sha256Hash || item.fileHash || item.hash || 'N/A';
-          const dateStr = item.createdAt ? new Date(item.createdAt).toLocaleString() : 'Just now';
+        if (!scans.length) {
+          return message('Your vault is empty', 'Scans you run in the workbench are saved here with their fingerprint.',
+            '<a class="btn btn--primary" href="scanner.html" style="margin-top: 18px;">Run your first scan</a>');
+        }
 
-          const badgeClass = isManipulated
-            ? 'bg-rose-950/60 border-rose-800 text-rose-400'
-            : 'bg-emerald-950/60 border-emerald-800 text-emerald-400';
-          const badgeLabel = isManipulated ? '⚠️ Synthetic / Deepfake' : '✓ Authentic / Verified';
-
-          return `
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:border-slate-700 transition">
-              <div class="space-y-1">
-                <div class="flex items-center gap-2.5">
-                  <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-300 text-[10px] font-bold tracking-wider">${type}</span>
-                  <h3 class="text-sm font-bold text-white">${title}</h3>
-                  <span class="px-2.5 py-0.5 rounded-full border text-[11px] font-semibold ${badgeClass}">${badgeLabel}</span>
-                </div>
-                <p class="text-xs text-slate-400 font-mono">SHA-256: ${hash}</p>
-                <p class="text-[11px] text-slate-500">${dateStr}</p>
-              </div>
-
-              <div class="flex items-center gap-6 border-t md:border-t-0 pt-3 md:pt-0 border-slate-800">
-                <div class="text-right">
-                  <span class="block text-[10px] text-slate-400 uppercase">AI Confidence</span>
-                  <span class="text-lg font-extrabold text-indigo-400">${aiScore}%</span>
-                </div>
-                <div class="text-right">
-                  <span class="block text-[10px] text-slate-400 uppercase">Harm Risk</span>
-                  <span class="text-lg font-extrabold text-rose-400">${harmScore}%</span>
-                </div>
-              </div>
-            </div>
-          `;
-        }).join('');
-      } catch (err) {
-        console.error('Vault Load Error:', err);
-        container.innerHTML = `<p class="text-sm text-rose-400">Failed to load scan history from server.</p>`;
+        const flagged = scans.filter((s) => s.flagged).length;
+        $('statTotal').textContent = scans.length;
+        $('statFlagged').textContent = flagged;
+        $('statClean').textContent = scans.length - flagged;
+        $('statAvg').textContent = `${Math.round(scans.reduce((sum, s) => sum + Number(s.ai || 0), 0) / scans.length)}%`;
+        $('stats').hidden = false;
+        $('toolbar').hidden = false;
+        $('ledger').style.marginTop = '0';
+        paint();
       }
-    }
 
-    function logout() {
-      localStorage.removeItem('verishield_token');
-      localStorage.removeItem('token');
-      window.location.href = 'auth.html';
-    }
+      document.querySelectorAll('[data-filter]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          filter = btn.dataset.filter;
+          document.querySelectorAll('[data-filter]').forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+          paint();
+        });
+      });
 
-    loadProfileAndHistory();
+      $('searchInput').addEventListener('input', (e) => { query = e.target.value.trim(); paint(); });
+
+      $('ledger').addEventListener('click', (e) => {
+        const btn = e.target.closest('[data-copy]');
+        if (btn) VS.copy(btn.dataset.copy, 'Fingerprint copied');
+      });
+
+      load();
+    })();
   </script>
 </body>
 </html>
