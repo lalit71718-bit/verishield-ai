@@ -303,11 +303,11 @@
       function render(payload) {
         lastScan = payload;
         const s = VS.readScan(payload);
-        const tone = s.flagged ? 'danger' : 'safe';
+        const tone = s.tone;
 
         $('verdict').dataset.tone = tone;
-        $('verdictIcon').innerHTML = VS.icon(s.flagged ? 'alert' : 'check');
-        $('verdictTitle').textContent = s.flagged ? 'Likely manipulated or synthetic' : 'No signs of manipulation';
+        $('verdictIcon').innerHTML = VS.icon(tone === 'safe' ? 'check' : 'alert');
+        $('verdictTitle').textContent = s.title;
         $('verdictText').textContent = s.summary;
 
         // Hash lines duplicate the fingerprint block below.
@@ -322,6 +322,8 @@
           $('metrics').innerHTML = [
             ['Metadata integrity', m.metadataIntegrity],
             ['Structural consistency', m.biometricConsistency],
+            ['Dimensions', m.imageDimensions],
+            ['Detection model', m.detectionModel],
             ['Provenance', m.provenanceStatus]
           ].filter(([, v]) => v).map(([k, v]) => `<div><dt>${k}</dt><dd>${VS.esc(v)}</dd></div>`).join('');
         }
@@ -354,7 +356,8 @@
         }
 
         const s = VS.readScan(lastScan);
-        const color = s.flagged ? '#e11d48' : '#059669';
+        const color = { danger: '#e11d48', warn: '#b45309', safe: '#059669' }[s.tone];
+        const fill = { danger: '#fff1f2', warn: '#fffbeb', safe: '#ecfdf5' }[s.tone];
         const kinds = { pdf: 'PDF document', image: 'Image', video: 'Video', text: 'Text snippet' };
         const timestamp = (s.date ? new Date(s.date) : new Date()).toUTCString();
         const banner = (stack, fill) => ({
@@ -388,9 +391,9 @@
             gap(10),
             banner([
               { text: 'VERDICT', color, fontSize: 9, bold: true },
-              { text: s.flagged ? 'LIKELY MANIPULATED OR SYNTHETIC' : 'NO SIGNS OF MANIPULATION', color, fontSize: 16, bold: true, margin: [0, 4, 0, 0] },
+              { text: s.title.toUpperCase(), color, fontSize: 16, bold: true, margin: [0, 4, 0, 0] },
               { text: s.summary, color: '#334155', fontSize: 10, margin: [0, 6, 0, 0] }
-            ], s.flagged ? '#fff1f2' : '#ecfdf5'),
+            ], fill),
             gap(10),
             {
               columns: [

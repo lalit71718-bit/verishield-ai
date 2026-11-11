@@ -1,8 +1,10 @@
 const crypto = require('crypto');
 const fs = require('fs');
 const Scan = require('../models/Scan');
+const { analyzeImage } = require('../services/imageForensics');
+const { detectAiImage } = require('../services/aiDetector');
 
-const buildForensicResult = (seedBuffer, contentName, mediaType) => {
+const buildForensicResult = (seedBuffer, contentName, mediaType, options = {}) => {
   const sha256Hash = crypto.createHash('sha256').update(seedBuffer).digest('hex');
   // Unsigned 32-bit integer so scores never turn negative
   const hashInt = (parseInt(sha256Hash.substring(0, 8), 16) >>> 0);
@@ -17,6 +19,7 @@ const buildForensicResult = (seedBuffer, contentName, mediaType) => {
   let harmRiskScore = 5 + ((hashInt >>> 4) % 15);
   const detectedAnomalies = [];
   const verifiedMarkers = [];
+  let imageReport = null;
 
   // 1. Comprehensive list of AI Generators, LLMs, & Document/Image Editing Tools
   const aiAndTamperSignatures = [
@@ -123,25 +126,20 @@ const buildForensicResult = (seedBuffer, contentName, mediaType) => {
       detectedAnomalies.push('Document XMP / Producer metadata indicates post-issuance modification');
     }
   } else if (mediaType === 'image') {
-    const isPng = seedBuffer[0] === 0x89 && seedBuffer[1] === 0x50;
-    const isJpeg = seedBuffer[0] === 0xFF && seedBuffer[1] === 0xD8;
+    // Images are classified from parsed container metadata (and an optional
+    // detection model), not from a search of the raw bytes.
+    imageReport = analyzeImage(seedBuffer, options);
+    aiProbability = imageReport.aiProbability;
+    harmRiskScore = imageReport.harmRiskScore;
+    detectedAnomalies.push(...imageReport.anomalies);
+    verifiedMarkers.push(...imageReport.markers);
 
-    if (isPng || isJpeg) {
-      verifiedMarkers.push(`Authentic ${isPng ? 'PNG (IHDR)' : 'JPEG (SOI/Exif)'} binary container verified`);
-    }
-
-    if (matchedSignatures.length > 0) {
-      aiProbability = 80 + (hashInt % 16); // 80% - 95%
-      harmRiskScore = 75 + ((hashInt >>> 3) % 20); // 75% - 94%
-      detectedAnomalies.push(
-        `AI generator or image manipulation signature detected: ${matchedSignatures
-          .map(s => s.toUpperCase())
-          .join(', ')}`
-      );
-      detectedAnomalies.push('C2PA / EXIF camera provenance missing or overwritten by editing software');
-    } else {
-      verifiedMarkers.push('No generative diffusion / LLM / editing software markers found in image container');
-      verifiedMarkers.push('Pixel compression & quantization tables consistent with authentic capture');
+    // Filename markers ("fake", "edited", ...) still flag a file on their own.
+    const nameMarkers = aiAndTamperSignatures.filter(sig => lowerName.includes(sig));
+    if (nameMarkers.length > 0 && imageReport.kind !== 'ai') {
+      aiProbability = Math.max(aiProbability, 80);
+      harmRiskScore = Math.max(harmRiskScore, 75);
+      detectedAnomalies.unshift(`File name contains a tampering marker: ${nameMarkers.map(s => s.toUpperCase()).join(', ')}`);
     }
   } else if (mediaType === 'text') {
     const scamAndAiKeywords = [
@@ -186,28 +184,68 @@ const buildForensicResult = (seedBuffer, contentName, mediaType) => {
   harmRiskScore = Math.max(1, Math.min(99, Math.round(harmRiskScore)));
 
   const isManipulated = aiProbability > 60 || harmRiskScore > 65;
-  const verdict = isManipulated
-    ? 'High-Risk Synthetic / Tampered Document Detected'
-    : 'Authentic / Verified Document';
-  const status = isManipulated ? 'MANIPULATED' : 'AUTHENTIC';
+  // An image with no provenance is neither authentic nor proven synthetic.
+  const isInconclusive = !isManipulated && !!imageReport && imageReport.kind === 'inconclusive';
+  const fingerprintLine = `SHA-256 Fingerprint: ${sha256Hash.substring(0, 32)}...`;
 
-  const explanationText = isManipulated
-    ? `Forensic telemetry detected manipulation or synthetic generation indicators (${aiProbability}% confidence) and elevated risk (${harmRiskScore}% risk). Cryptographic SHA-256 fingerprint logged.`
-    : `Document passed structural binary and metadata integrity verification (${aiProbability}% synthetic probability, ${harmRiskScore}% risk). Cryptographic SHA-256 hash verified and logged in vault.`;
+  let verdict;
+  let status;
+  let explanationText;
+  let artifactsList;
 
-  const artifactsList = isManipulated
-    ? [
-        ...detectedAnomalies,
-        'EXIF / C2PA provenance metadata stripped or modified',
-        `Structural & biometric consistency deviation (${100 - Math.floor(aiProbability * 0.7)}% match)`,
-        `SHA-256 Fingerprint: ${sha256Hash.substring(0, 32)}...`
-      ]
-    : [
-        ...verifiedMarkers,
-        'No synthetic frequency-domain or editing tool anomalies detected',
-        'C2PA / Cryptographic provenance compatible',
-        `SHA-256 Fingerprint: ${sha256Hash.substring(0, 32)}...`
-      ];
+  if (imageReport) {
+    const aiNamed = imageReport.generators.length > 0;
+    if (isManipulated) {
+      status = 'MANIPULATED';
+      if (imageReport.kind === 'edited') {
+        verdict = 'Edited Image Detected';
+        explanationText = `This image was saved by editing software (${imageReport.editors.join(', ')}), so its content may have been altered after capture.`;
+      } else if (aiNamed) {
+        verdict = 'AI-Generated Image Detected';
+        explanationText = `The file's own metadata identifies it as AI-generated (${imageReport.generators.join(', ')}).`;
+      } else if (imageReport.detectorScore !== null && imageReport.detectorScore >= 60) {
+        verdict = 'AI-Generated Image Detected';
+        explanationText = `An AI-image detection model scored this image ${imageReport.detectorScore}% likely to be AI-generated.`;
+      } else {
+        verdict = 'Likely AI-Generated Image';
+        explanationText = 'This image carries no camera or provenance metadata and its dimensions match a standard AI-generator output size. Treat it as AI-generated unless the source can prove otherwise.';
+      }
+    } else if (isInconclusive) {
+      status = 'INCONCLUSIVE';
+      verdict = 'Unverified Image / No Provenance';
+      explanationText = 'This image carries no camera or provenance metadata, so it cannot be confirmed as a real photo. AI images that were downloaded, screenshotted or forwarded look exactly like this. Do not treat it as authentic.';
+    } else {
+      status = 'AUTHENTIC';
+      verdict = imageReport.hasCamera ? 'Consistent With Camera Capture' : 'No Signs of AI Generation';
+      explanationText = imageReport.hasCamera
+        ? 'The file carries camera capture metadata and names no AI generator or editing software. Metadata can be forged, so treat this as supporting evidence, not proof.'
+        : 'An AI-image detection model scored this image as unlikely to be AI-generated, and its metadata names no generator or editor.';
+    }
+    artifactsList = [...detectedAnomalies, ...verifiedMarkers, fingerprintLine];
+  } else {
+    verdict = isManipulated
+      ? 'High-Risk Synthetic / Tampered Document Detected'
+      : 'Authentic / Verified Document';
+    status = isManipulated ? 'MANIPULATED' : 'AUTHENTIC';
+
+    explanationText = isManipulated
+      ? `Forensic telemetry detected manipulation or synthetic generation indicators (${aiProbability}% confidence) and elevated risk (${harmRiskScore}% risk). Cryptographic SHA-256 fingerprint logged.`
+      : `Document passed structural binary and metadata integrity verification (${aiProbability}% synthetic probability, ${harmRiskScore}% risk). Cryptographic SHA-256 hash verified and logged in vault.`;
+
+    artifactsList = isManipulated
+      ? [
+          ...detectedAnomalies,
+          'EXIF / C2PA provenance metadata stripped or modified',
+          `Structural & biometric consistency deviation (${100 - Math.floor(aiProbability * 0.7)}% match)`,
+          fingerprintLine
+        ]
+      : [
+          ...verifiedMarkers,
+          'No synthetic frequency-domain or editing tool anomalies detected',
+          'C2PA / Cryptographic provenance compatible',
+          fingerprintLine
+        ];
+  }
 
   return {
     detectionPercentage: aiProbability,
@@ -249,19 +287,37 @@ const buildForensicResult = (seedBuffer, contentName, mediaType) => {
     detectedArtifacts: artifactsList,
     anomalies: artifactsList,
     findings: artifactsList,
-    forensicMetrics: {
-      artifactScore: (aiProbability * 0.92).toFixed(1),
-      metadataIntegrity: isManipulated ? 'Compromised / Stripped' : 'Verified Intact',
-      biometricConsistency: `${100 - Math.floor(aiProbability * 0.7)}%`,
-      provenanceStatus: isManipulated ? 'Unverified Synthetic' : 'C2PA Compatible'
-    },
+    isInconclusive,
+    forensicMetrics: imageReport
+      ? {
+          metadataIntegrity: imageReport.generators.length
+            ? 'Names an AI generator'
+            : imageReport.editors.length
+              ? 'Names an image editor'
+              : imageReport.hasCamera ? 'Camera EXIF present' : 'No provenance metadata',
+          imageDimensions: imageReport.width ? `${imageReport.width} × ${imageReport.height}` : undefined,
+          detectionModel: imageReport.detectorScore !== null ? `${imageReport.detectorScore}% AI-generated` : 'Not configured',
+          provenanceStatus: isManipulated ? 'Synthetic or altered' : isInconclusive ? 'Unverified' : 'Camera capture'
+        }
+      : {
+          artifactScore: (aiProbability * 0.92).toFixed(1),
+          metadataIntegrity: isManipulated ? 'Compromised / Stripped' : 'Verified Intact',
+          biometricConsistency: `${100 - Math.floor(aiProbability * 0.7)}%`,
+          provenanceStatus: isManipulated ? 'Unverified Synthetic' : 'C2PA Compatible'
+        },
     safetyActions: isManipulated
       ? [
           'Download SHA-256 Cryptographic Evidence Certificate',
           'File Immediate Platform Takedown (IT Rules 2021 / DMCA)',
           'Submit Evidence Packet to National Cyber Crime Portal (1930)'
         ]
-      : ['Document passed structural authenticity checks. Cryptographic hash logged in vault.'],
+      : isInconclusive
+        ? [
+            'Ask the sender for the original file, or where the image came from',
+            'Run a reverse image search to look for earlier copies',
+            'Do not rely on this image as evidence until its source is confirmed'
+          ]
+        : ['Document passed structural authenticity checks. Cryptographic hash logged in vault.'],
     createdAt: new Date()
   };
 };
@@ -279,7 +335,14 @@ const scanMedia = async (req, res) => {
     if (mime.includes('video')) mediaType = 'video';
     else if (mime.includes('pdf')) mediaType = 'pdf';
 
-    const result = buildForensicResult(fileBuffer, uploadedFile.originalname, mediaType);
+    // Optional pixel-level detection model; null when not configured or unavailable.
+    const detection = mediaType === 'image'
+      ? await detectAiImage(fileBuffer, uploadedFile.originalname, mime)
+      : null;
+
+    const result = buildForensicResult(fileBuffer, uploadedFile.originalname, mediaType, detection
+      ? { detectorScore: detection.score, detectorName: detection.name }
+      : {});
 
     let savedScan = null;
     try {
@@ -357,4 +420,4 @@ const getUserScans = async (req, res) => {
   }
 };
 
-module.exports = { scanMedia, scanText, getUserScans };
+module.exports = { scanMedia, scanText, getUserScans, buildForensicResult };
