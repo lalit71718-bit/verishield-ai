@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>StudyBridge</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=DM+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<!--BODY-->
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#home">STUDYBRIDGE</a>
+    <nav aria-label="Sections">
+      <a href="#finder">Finder</a>
+      <a href="#why">Why us</a>
+      <a href="#how">How it works</a>
+      <a href="#services">Services</a>
+      <a href="#mentor">Mentors</a>
+      <a href="#talk">Talk to us</a>
+    </nav>
+    <select id="cur" aria-label="Show costs in">
+      <option value="INR">INR ₹</option>
+      <option value="NPR">NPR</option>
+      <option value="BDT">BDT</option>
+      <option value="USD">USD $</option>
+    </select>
+  </div>
+</header>
+
+<main>
+<section class="hero" id="home">
+  <div class="wrap">
+    <div>
+      <span class="tag">Admissions desk | India · Nepal · Bangladesh</span>
+      <h1>Study<br>Bridge</h1>
+      <p class="lead">One plan. Three countries.</p>
+      <p class="sub">Pick a course, a city and a budget. We shortlist colleges, connect you with a student already there, and stay with you from application to arrival.</p>
+      <a class="btn" href="#finder">Find my college</a>
+    </div>
+    <div class="stack" aria-hidden="true">
+      <div class="note p pin"><span class="mono hl">Medical | MBBS</span><h3>Seats in Dhaka, Pokhara and Chennai</h3></div>
+      <div class="note o"><span class="mono hl">Cost | Full picture</span><h3>Tuition, hostel and food in one number</h3></div>
+      <div class="note g pin"><span class="mono hl">Mentor | Free first call</span><h3>Talk to a senior before you pay</h3></div>
+    </div>
+  </div>
+</section>
+
+<section id="finder">
+  <div class="wrap">
+    <span class="tag">01 | College finder</span>
+    <h2>Tell us your plan. See your shortlist</h2>
+    <div class="finder">
+      <form class="panel" onsubmit="return false">
+        <fieldset>
+          <legend>Country</legend>
+          <div class="chips">
+            <label><input type="radio" name="country" id="f-in" value="India" checked><span>India</span></label>
+            <label><input type="radio" name="country" id="f-np" value="Nepal"><span>Nepal</span></label>
+            <label><input type="radio" name="country" id="f-bd" value="Bangladesh"><span>Bangladesh</span></label>
+          </div>
+        </fieldset>
+        <div><label for="f-course">Course</label><select id="f-course"></select></div>
+        <div><label for="f-branch">Branch</label><select id="f-branch"></select></div>
+        <fieldset>
+          <legend>Level</legend>
+          <div class="chips">
+            <label><input type="radio" name="level" id="f-ug" value="Undergrad" checked><span>Undergrad</span></label>
+            <label><input type="radio" name="level" id="f-pg" value="Masters"><span>Masters</span></label>
+            <label><input type="radio" name="level" id="f-phd" value="PhD"><span>PhD</span></label>
+          </div>
+        </fieldset>
+        <div><label for="f-city">City</label><select id="f-city"></select></div>
+        <div>
+          <label for="f-budget">Budget per year, with living</label>
+          <div class="budget-val" id="budget-val"></div>
+          <input type="range" id="f-budget" min="1000" max="25000" step="500" value="8000">
+        </div>
+      </form>
+      <div>
+        <div class="results-head"><strong id="res-count"></strong><span id="res-sub"></span></div>
+        <div class="grid" id="results" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="why">
+  <div class="wrap">
+    <span class="tag">02 | Why not just an agent</span>
+    <h2>What a local agent can't show you</h2>
+    <div class="scroll">
+      <table>
+        <thead><tr><td></td><th>Local agent</th><th>College website</th><th>StudyBridge</th></tr></thead>
+        <tbody>
+          <tr><th>Full yearly cost shown before you apply</th><td class="no">X</td><td>~</td><td>YES</td></tr>
+          <tr><th>Colleges across all three countries</th><td>~</td><td class="no">X</td><td>YES</td></tr>
+          <tr><th>A call with a current student first</th><td class="no">X</td><td class="no">X</td><td>YES</td></tr>
+          <tr><th>Application status you can track</th><td class="no">X</td><td>~</td><td>YES</td></tr>
+          <tr><th>Help after you land: hostel, SIM, registration</th><td>~</td><td class="no">X</td><td>YES</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="key">YES = built in &nbsp; ~ = sometimes &nbsp; X = not offered</p>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <span class="tag">03 | How it works</span>
+    <h2>Three steps from plan to campus</h2>
+    <div class="steps">
+      <div class="note y"><span class="mono">Step 01</span><h3>Tell us your plan</h3><p>Country, course, level, city and budget. It takes about two minutes.</p></div>
+      <div class="note b pin"><span class="mono">Step 02</span><h3>Get a shortlist and a mentor</h3><p>Colleges that fit your marks and money, plus a senior from your own country to ask anything.</p></div>
+      <div class="note g"><span class="mono">Step 03</span><h3>Apply, travel, settle in</h3><p>We handle forms, documents and visa steps, then help with hostel and arrival.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="services">
+  <div class="wrap">
+    <span class="tag">04 | Services</span>
+    <h2>Nine services. One platform</h2>
+    <div class="legend">
+      <span class="y"><i></i>Admission</span><span class="p"><i></i>Money</span><span class="g"><i></i>Arrival</span>
+    </div>
+    <div class="grid">
+      <div class="note y"><span class="mono">Admission</span><h3>College shortlist</h3><p>Safe, good-match and ambitious options for your profile.</p></div>
+      <div class="note y pin"><span class="mono">Admission</span><h3>Eligibility check</h3><p>Marks, entrance scores and equivalence rules checked up front.</p></div>
+      <div class="note y"><span class="mono">Admission</span><h3>Application + documents</h3><p>One document vault and a checklist with every deadline.</p></div>
+      <div class="note y"><span class="mono">Admission</span><h3>Visa and NOC guidance</h3><p>Step-by-step for your route, including home-country approvals.</p></div>
+      <div class="note p pin"><span class="mono">Money</span><h3>True cost calculator</h3><p>Tuition, hostel, food and travel for the whole course.</p></div>
+      <div class="note p"><span class="mono">Money</span><h3>Scholarship matching</h3><p>Government, SAARC-quota and college awards you can apply for.</p></div>
+      <div class="note p"><span class="mono">Money</span><h3>Loan + money transfer</h3><p>Partner banks for education loans and fee payments abroad.</p></div>
+      <div class="note g pin"><span class="mono">Arrival</span><h3>Hostel and PG booking</h3><p>Verified rooms near campus, booked before you fly.</p></div>
+      <div class="note g"><span class="mono">Arrival</span><h3>Arrival kit</h3><p>Airport pickup, local SIM, bank account and police registration.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="mentor">
+  <div class="wrap">
+    <span class="tag">05 | Get connected with a mentor</span>
+    <h2>Ask someone who already made the move</h2>
+    <div class="grid" id="mentors"></div>
+  </div>
+</section>
+
+<section id="talk">
+  <div class="wrap">
+    <div class="contact">
+      <div class="pitch">
+        <span class="tag">06 | Talk to us</span>
+        <h2>Free<br>counselling</h2>
+        <p>Leave your details and what you want to study. A counsellor calls you back with a shortlist and the full cost.</p>
+      </div>
+      <form id="lead">
+        <div><label for="c-name">Your name</label><input type="text" id="c-name" required autocomplete="name"></div>
+        <div><label for="c-phone">Phone or WhatsApp</label><input type="tel" id="c-phone" required autocomplete="tel"></div>
+        <div class="full"><label for="c-home">Your home country</label>
+          <select id="c-home"><option>India</option><option>Nepal</option><option>Bangladesh</option><option>Other</option></select></div>
+        <div class="full"><label for="c-msg">What do you want to study?</label><textarea id="c-msg" rows="3"></textarea></div>
+        <button class="btn full" type="submit">Request a call back</button>
+        <p class="done full" id="done" role="status" hidden></p>
+      </form>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <strong>STUDYBRIDGE</strong>
+    <span>Demo build. College costs, exchange rates and mentor profiles are sample data, not confirmed figures.</span>
+  </div>
+</footer>
+<!--/BODY-->
+<script src="app.js"></script>
+</body>
+</html>
