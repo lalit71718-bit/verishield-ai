@@ -247,6 +247,11 @@
 
     const out = host.querySelector('[data-action="logout"]');
     if (out) out.addEventListener('click', logout);
+
+    // Clear over the water at the top; frosted once the page scrolls.
+    const onScroll = () => host.classList.toggle('is-scrolled', window.scrollY > 12);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
   }
 
   function mountFooter() {
@@ -360,6 +365,11 @@
   }
 
   document.addEventListener('DOMContentLoaded', () => {
+    // Hairline 2 × 2 grid behind every page.
+    const cross = document.createElement('div');
+    cross.className = 'crosshair';
+    cross.setAttribute('aria-hidden', 'true');
+    document.body.prepend(cross);
     mountFooter();
     initReveal();
   });

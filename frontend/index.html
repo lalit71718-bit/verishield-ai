@@ -5,64 +5,94 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>VeriShield AI — Know what's real before you trust it</title>
   <meta name="description" content="Check documents, media, text and links for signs of tampering or fraud, and keep a SHA-256 fingerprinted record of every verdict." />
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 3 5.500 7v8c0 6.300 4.400 11.500 10.500 13.500C22.100 26.500 26.500 21.300 26.500 15V7L16 3Z' fill='%23928fff'/%3E%3Cpath d='m11 15.500 3.600 3.600L21.500 12' stroke='%23090b0f' stroke-width='2.600' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 3 5.500 7v8c0 6.300 4.400 11.500 10.500 13.500C22.100 26.500 26.500 21.300 26.500 15V7L16 3Z' fill='%2344a2c3'/%3E%3Cpath d='m11 15.500 3.600 3.600L21.500 12' stroke='%2306111b' stroke-width='2.600' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Bitcount+Prop+Single:CRSV,ELSH,ELXP,slnt,wght@0..1,0..100,0..100,-8..0,100..900&family=Geist:wght@300..700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
   <script src="app.js"></script>
 </head>
 <body>
 
+  <canvas class="dive-canvas" id="dive" aria-hidden="true"></canvas>
+  <div class="dive-shade" id="diveShade" aria-hidden="true"></div>
+
   <header id="nav"></header>
   <script>VS.mountNav('home');</script>
 
+  <!-- Scan-depth gauge: scrolling is a dive through the layers a scan inspects -->
+  <aside class="depth" aria-hidden="true">
+    <div class="depth__title">Q4 · Scan depth</div>
+    <div class="depth__track"><div class="depth__marker" id="depthMarker"><span id="depthValue">000 m</span></div></div>
+    <div class="depth__zone" id="depthZone"><span>Surface</span></div>
+  </aside>
+
   <main>
-    <!-- Hero -->
-    <section class="shell hero">
-      <div>
-        <span class="chip" data-tone="accent"><span class="dot dot--pulse"></span>Forensics · URL intel · Evidence vault</span>
+    <!-- Hero: dive stage -->
+    <section class="hero" id="top">
+      <div class="hero__inner">
+        <h1>
+          <span class="line" data-sink><span class="intro" style="--i:0">Know what&rsquo;s real</span></span>
+          <span class="line" data-sink><span class="intro" style="--i:1">before you <span class="serif">trust</span> it</span></span>
+        </h1>
 
-        <h1>Know what's <span class="serif">real</span> before you trust it.</h1>
-
-        <p class="hero__lede">
-          VeriShield inspects documents, images, video, text and links for signs of tampering or fraud — then fingerprints every verdict so you can prove what you saw.
-        </p>
-
-        <form class="quick" id="quickForm" novalidate>
-          <label class="sr-only" for="quickUrl">Link to check</label>
-          <input id="quickUrl" type="text" inputmode="url" autocomplete="off" spellcheck="false" placeholder="Paste a link to check…" />
-          <button class="btn btn--primary" type="submit">Check link <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
-        </form>
-        <p class="hero__alt">Got a file instead? <a href="scanner.html">Open the forensic workbench</a></p>
-
-        <dl class="facts">
-          <div><dt>SHA-256</dt><dd>fingerprint on every scan</dd></div>
-          <div><dt>100 MB</dt><dd>per image, video or PDF</dd></div>
-          <div><dt>4 inputs</dt><dd>files, media, text, links</dd></div>
-        </dl>
-      </div>
-
-      <!-- Looping sample report -->
-      <div class="card card--raised casefile" id="casefile" aria-label="Sample report">
-        <div class="casefile__bar">
-          <span class="eyebrow">Case file</span>
-          <span class="chip">Sample output</span>
+        <div data-sink>
+          <p class="hero__lede intro" style="--i:3">
+            VeriShield listens for the signals of tampering in documents, images, video, text and links &mdash; then fingerprints every verdict so you can prove what you saw.
+          </p>
         </div>
-        <div class="casefile__body">
-          <div class="scan-doc" aria-hidden="true"></div>
-          <div class="casefile__fade">
-            <div class="casefile__name" id="cfName">invoice_audit.pdf</div>
-            <div class="casefile__kind" id="cfKind">PDF document · 248 KB</div>
-            <div class="casefile__gauges">
-              <figure><div id="cfGaugeA"></div><figcaption id="cfLabelA">AI confidence</figcaption></figure>
-              <figure><div id="cfGaugeB"></div><figcaption id="cfLabelB">Harm risk</figcaption></figure>
-            </div>
+
+        <div data-sink>
+          <div class="intro" style="--i:4">
+            <form class="quick" id="quickForm" novalidate>
+              <label class="sr-only" for="quickUrl">Link to check</label>
+              <input id="quickUrl" type="text" inputmode="url" autocomplete="off" spellcheck="false" placeholder="Paste a link to check…" />
+              <button class="btn btn--primary" type="submit">Check link <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+            </form>
+            <p class="hero__alt">Got a file instead? <a href="scanner.html">Open the forensic workbench</a></p>
           </div>
         </div>
-        <div class="casefile__verdict casefile__fade">
-          <p id="cfNote">Metadata intact, no editing-tool signatures.</p>
-          <span class="chip" id="cfChip" data-tone="safe">Authentic</span>
+      </div>
+
+      <p class="corner corner--bl intro" style="--i:6">Forensics · URL intel · Evidence vault<br />SHA-256 on every scan</p>
+      <p class="corner corner--br intro" style="--i:6">Scroll to dive <span>&darr;</span></p>
+    </section>
+
+    <!-- Live case file -->
+    <section class="shell section">
+      <div class="signal-split">
+        <div class="reveal">
+          <span class="eyebrow eyebrow--accent">Live case file</span>
+          <h2>Every file leaves a <span class="serif">signal</span></h2>
+          <p class="lead">Metadata, structure and wording all carry traces of where a file has been. VeriShield reads them, scores them and tells you in plain language what they mean.</p>
+          <dl class="facts">
+            <div><dt>SHA-256</dt><dd>fingerprint on every scan</dd></div>
+            <div><dt>100 MB</dt><dd>per image, video or PDF</dd></div>
+            <div><dt>4</dt><dd>files, media, text, links</dd></div>
+          </dl>
+        </div>
+
+        <!-- Looping sample report -->
+        <div class="card card--raised casefile reveal" id="casefile" aria-label="Sample report">
+          <div class="casefile__bar">
+            <span class="eyebrow">Case file</span>
+            <span class="chip">Sample output</span>
+          </div>
+          <div class="casefile__body">
+            <div class="scan-doc" aria-hidden="true"></div>
+            <div class="casefile__fade">
+              <div class="casefile__name" id="cfName">invoice_audit.pdf</div>
+              <div class="casefile__kind" id="cfKind">PDF document · 248 KB</div>
+              <div class="casefile__gauges">
+                <figure><div id="cfGaugeA"></div><figcaption id="cfLabelA">AI confidence</figcaption></figure>
+                <figure><div id="cfGaugeB"></div><figcaption id="cfLabelB">Harm risk</figcaption></figure>
+              </div>
+            </div>
+          </div>
+          <div class="casefile__verdict casefile__fade">
+            <p id="cfNote">Metadata intact, no editing-tool signatures.</p>
+            <span class="chip" id="cfChip" data-tone="safe">Authentic</span>
+          </div>
         </div>
       </div>
     </section>
@@ -71,7 +101,7 @@
     <section class="shell section" id="features">
       <div class="section__head reveal">
         <span class="eyebrow eyebrow--accent">What it does</span>
-        <h2>Three tools, one <span class="serif">evidence trail</span>.</h2>
+        <h2>Three tools, one <span class="serif">evidence trail</span></h2>
         <p>Each tool gives you a score, a plain-language verdict and the specific signals behind it.</p>
       </div>
 
@@ -118,7 +148,7 @@
     <section class="shell section--tight">
       <div class="section__head reveal">
         <span class="eyebrow eyebrow--accent">How it works</span>
-        <h2>From upload to evidence in three steps.</h2>
+        <h2>Upload to evidence in <span class="serif">three</span> steps</h2>
       </div>
       <div class="steps reveal">
         <div class="step">
@@ -143,7 +173,7 @@
     <section class="shell section">
       <div class="section__head reveal">
         <span class="eyebrow eyebrow--accent">Reading a verdict</span>
-        <h2>Clear enough to act on.</h2>
+        <h2>Clear enough to <span class="serif">act</span> on</h2>
         <p>Every result lands in one of three tiers, with the reasons listed underneath.</p>
       </div>
       <div class="tiers reveal">
@@ -169,7 +199,7 @@
     <section class="shell section--tight">
       <div class="card cta reveal">
         <div>
-          <h2>Check it before you <span class="serif">share it</span>.</h2>
+          <h2>Check it before you <span class="serif">share</span> it</h2>
           <p>Create a free account to scan files and keep every verdict in your vault. Link checks work without one.</p>
         </div>
         <div class="cta__actions">
@@ -181,6 +211,7 @@
   </main>
 
   <footer id="footer"></footer>
+  <script src="dive.js"></script>
 
   <script>
     (function () {
