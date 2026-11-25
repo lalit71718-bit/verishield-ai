@@ -33,6 +33,14 @@ VeriShield AI checks documents, images, video, text and links for signs of tampe
 - Three-tier verdict (Safe, Suspicious, Phishing) with a trust score, a scam-risk score and reasons.
 - Checks the domain against a list of known platforms, and looks for scam keywords and hyphen-stuffed lookalike domains.
 
+### Live Deepfake Meeting Guard
+- Open `meetingguard.html`, pick **Call window** (share your Zoom, Meet or Teams tab), **My camera** or **Demo**, and press **Start guard**.
+- A face-landmark AI model (Google MediaPipe Face Landmarker) runs **inside the browser**. Video and images are never uploaded; only a small vector of numbers is sent to `POST /api/meeting/analyze`.
+- Signals: face-edge stability, skin sharpness and tone match against the neck, blink rate, expression liveliness, lip and voice sync, face-tracking dropouts, plus an optional head-turn test.
+- The backend fuses the signals into a risk score and one of four states (Calibrating, No face-swap signs, Be careful, Face-swap likely). "Face-swap likely" needs at least two independent signals to agree, to avoid false alarms. A red banner, toast and alarm sound fire when it triggers.
+- Signed-in users can save session summaries (`POST /api/meeting/sessions`, `GET /api/meeting/history`).
+- Thresholds are starting values in `backend/services/meetingGuard.js` and should be tuned on real recordings. Results are indicators, not proof.
+
 ### Evidence vault
 - Every file and text scan is saved to the signed-in account with its SHA-256 fingerprint.
 - Totals, a Flagged / Unverified / Clean filter, search by name or hash, and expandable entries with findings and next steps.

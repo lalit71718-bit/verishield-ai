@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Meeting Guard — VeriShield AI</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 3 5.500 7v8c0 6.300 4.400 11.500 10.500 13.500C22.100 26.500 26.500 21.300 26.500 15V7L16 3Z' fill='%23928fff'/%3E%3Cpath d='m11 15.500 3.600 3.600L21.500 12' stroke='%23090b0f' stroke-width='2.600' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="app.js"></script>
+</head>
+<body>
+
+  <header id="nav"></header>
+  <script>VS.mountNav('meeting');</script>
+
+  <main class="shell">
+    <div class="page-head">
+      <span class="eyebrow eyebrow--accent">Live deepfake meeting guard</span>
+      <h1>Is the person on this call real?</h1>
+      <p>An AI face model watches a video call as it happens and warns you if the face looks swapped or generated. Built for fake-CEO and fake-interviewer scams. Your video never leaves this browser.</p>
+    </div>
+
+    <div class="workbench">
+      <!-- Controls -->
+      <section class="card" aria-labelledby="ctlTitle">
+        <h2 class="card__title" id="ctlTitle">Start guarding</h2>
+        <p class="card__sub">Choose what the guard should watch.</p>
+
+        <div class="segmented" role="group" aria-label="Video source" style="margin: 20px 0 14px;">
+          <button type="button" data-source="screen" aria-pressed="true">Call window</button>
+          <button type="button" data-source="camera" aria-pressed="false">My camera</button>
+          <button type="button" data-source="demo" aria-pressed="false">Demo</button>
+        </div>
+        <p class="hint" id="sourceHint" style="margin: 0 0 16px;"></p>
+
+        <div class="mg-controls" style="margin-top: 0;">
+          <button class="btn btn--primary btn--lg" id="startBtn" type="button">Start guard</button>
+          <button class="btn btn--ghost btn--lg" id="stopBtn" type="button" hidden>Stop</button>
+        </div>
+        <div class="mg-controls">
+          <button class="btn btn--ghost" id="challengeBtn" type="button" disabled>Head-turn test</button>
+          <button class="btn btn--ghost" id="muteBtn" type="button" aria-pressed="false">Alarm sound: on</button>
+        </div>
+        <p class="hint" id="challengeHint" aria-live="polite">The head-turn test asks the other person to look left and right. Face-swap models often glitch at the side.</p>
+
+        <div class="block">
+          <div class="notice" data-tone="accent">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4.5 6v5.6c0 4.4 3.100 8.200 7.500 9.400 4.400-1.200 7.500-5 7.500-9.400V6L12 3Z"/><path d="m9 12 2 2 4-4"/></svg>
+            <span><strong>Private by design.</strong> The face AI runs inside your browser. Only a few numbers are sent to score the call, never video or images.</span>
+          </div>
+        </div>
+
+        <div class="block">
+          <div class="eyebrow block__title">How to use it</div>
+          <ol class="mg-steps">
+            <li><span>Open your Zoom, Meet or Teams call in a tab or window.</span></li>
+            <li><span>Press <b>Start guard</b> and choose that tab or window to share.</span></li>
+            <li><span>Make the other person's video large so their face is clear.</span></li>
+            <li><span>Watch the risk score. If it turns red, stop and verify them another way.</span></li>
+          </ol>
+        </div>
+
+        <div class="block" id="historyBlock" hidden>
+          <div class="eyebrow block__title">Your saved sessions</div>
+          <ul class="mg-sessions" id="history" style="list-style: none; padding: 0; margin: 0;"></ul>
+        </div>
+      </section>
+
+      <!-- Live panel -->
+      <section class="card" aria-labelledby="liveTitle">
+        <h2 class="sr-only" id="liveTitle">Live result</h2>
+
+        <div class="mg-stage" id="stage" data-level="IDLE">
+          <video id="video" playsinline muted hidden></video>
+          <canvas id="overlay"></canvas>
+          <div class="mg-stage__idle" id="stageIdle">
+            <div>
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="13" height="14" rx="2"/><path d="m16 10 5-3v10l-5-3"/></svg>
+              No video yet. Press <b>Start guard</b>.
+            </div>
+          </div>
+          <span class="chip mg-stage__tag" id="stageTag" hidden></span>
+          <div class="mg-alert" id="alertBar" role="alert">FACE-SWAP LIKELY. Do not send money or share codes.</div>
+        </div>
+
+        <div class="verdict block" id="verdict" data-tone="accent" aria-live="polite">
+          <div class="verdict__icon" id="verdictIcon"></div>
+          <div>
+            <div class="verdict__title" id="verdictTitle">Waiting to start</div>
+            <p class="verdict__text" id="verdictText">Start the guard to begin watching a call.</p>
+          </div>
+        </div>
+
+        <div class="scores block">
+          <div class="score">
+            <div id="gaugeRisk"></div>
+            <div>
+              <div class="score__label">Face-swap risk</div>
+              <div class="score__note">Higher is worse. Combined from the signals below.</div>
+            </div>
+          </div>
+          <div class="score">
+            <div id="gaugeConf"></div>
+            <div>
+              <div class="score__label">Confidence</div>
+              <div class="score__note">Grows the longer the face is watched.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="block">
+          <div class="eyebrow block__title">Live signals</div>
+          <div id="signals"><p class="muted" style="font-size: 13.5px;">Signals appear once the guard is running.</p></div>
+        </div>
+
+        <div class="block">
+          <div class="eyebrow block__title">What to do</div>
+          <ul class="findings" id="advice"></ul>
+        </div>
+
+        <div class="block">
+          <div class="eyebrow block__title">Event log</div>
+          <ul class="mg-log" id="log" style="list-style: none; padding: 0; margin: 0;"><li><time>--:--</time><span>Nothing yet.</span></li></ul>
+        </div>
+
+        <div class="result-actions" id="summaryActions" hidden>
+          <button class="btn btn--primary" id="saveBtn" type="button">Save session to my account</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer id="footer"></footer>
+
+  <script type="module" src="meetingguard.js"></script>
+</body>
+</html>

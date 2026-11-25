@@ -1,0 +1,20 @@
+# Render Blueprint: hosts the VeriShield backend (Node + Express).
+# Dashboard: New > Blueprint > pick this repo. Then set the two secret values below.
+services:
+  - type: web
+    name: verishield-backend
+    runtime: node
+    plan: free
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: MONGO_URI
+        sync: false        # paste your MongoDB Atlas connection string
+      - key: JWT_SECRET
+        generateValue: true
+      - key: SIGHTENGINE_API_USER
+        sync: false
+      - key: SIGHTENGINE_API_SECRET
+        sync: false
