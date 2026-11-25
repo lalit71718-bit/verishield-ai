@@ -33,6 +33,7 @@
     shield: '<path d="M12 3 4.5 6v5.6c0 4.4 3.1 8.2 7.5 9.4 4.4-1.2 7.5-5 7.5-9.4V6L12 3Z"/>',
     file: '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5Z"/><path d="M14 3v5h5M9 13h6M9 17h4"/>',
     image: '<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="m21 16-5-5-8 8"/>',
+    shieldEye: '<path d="M12 3 4.5 6v5.600c0 4.400 3.100 8.200 7.500 9.400 4.400-1.200 7.500-5 7.500-9.400V6L12 3Z"/><circle cx="12" cy="11.500" r="2.300"/>',
     video: '<rect x="3" y="5" width="13" height="14" rx="2"/><path d="m16 10 5-3v10l-5-3"/>',
     text: '<path d="M5 6h14M5 11h14M5 16h9"/>',
     link: '<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3A4 4 0 0 0 11 18.7l1-1"/>',
@@ -195,6 +196,7 @@
   const LINKS = [
     { id: 'scanner', href: 'scanner.html', label: 'Workbench' },
     { id: 'urlcheck', href: 'urlcheck.html', label: 'URL Intel' },
+    { id: 'meeting', href: 'meetingguard.html', label: 'Meeting Guard' },
     { id: 'profile', href: 'profile.html', label: 'Vault' }
   ];
 
@@ -259,6 +261,7 @@
         <nav aria-label="Footer">
           <a href="scanner.html">Workbench</a>
           <a href="urlcheck.html">URL Intel</a>
+          <a href="meetingguard.html">Meeting Guard</a>
           <a href="profile.html">Vault</a>
         </nav>
       </div>`;
