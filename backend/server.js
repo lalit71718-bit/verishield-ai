@@ -7,6 +7,7 @@ const authRoutes = require('./routes/authRoutes');
 const scanRoutes = require('./routes/scanRoutes');
 const urlRoutes = require('./routes/urlRoutes');
 const meetingRoutes = require('./routes/meetingRoutes');
+const kycRoutes = require('./routes/kycRoutes');
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.use('/api/url', urlRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/scan', scanRoutes);
 app.use('/api/meeting', meetingRoutes);
+app.use('/api/kyc', kycRoutes);
 
 app.get('/', (req, res) => {
   res.json({ status: 'VeriShield AI v2.0 Backend is running!' });

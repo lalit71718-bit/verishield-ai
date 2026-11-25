@@ -197,6 +197,7 @@
     { id: 'scanner', href: 'scanner.html', label: 'Workbench' },
     { id: 'urlcheck', href: 'urlcheck.html', label: 'URL Intel' },
     { id: 'meeting', href: 'meetingguard.html', label: 'Meeting Guard' },
+    { id: 'kyc', href: 'kyc.html', label: 'KYC Desk' },
     { id: 'profile', href: 'profile.html', label: 'Vault' }
   ];
 
@@ -262,6 +263,7 @@
           <a href="scanner.html">Workbench</a>
           <a href="urlcheck.html">URL Intel</a>
           <a href="meetingguard.html">Meeting Guard</a>
+          <a href="kyc.html">KYC Desk</a>
           <a href="profile.html">Vault</a>
         </nav>
       </div>`;

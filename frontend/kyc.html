@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KYC Fraud Desk — VeriShield AI</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 3 5.500 7v8c0 6.300 4.400 11.500 10.500 13.500C22.100 26.500 26.500 21.300 26.500 15V7L16 3Z' fill='%23928fff'/%3E%3Cpath d='m11 15.500 3.600 3.600L21.500 12' stroke='%23090b0f' stroke-width='2.600' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="app.js"></script>
+</head>
+<body>
+
+  <header id="nav"></header>
+  <script>VS.mountNav('kyc');</script>
+
+  <main class="shell">
+    <div class="page-head">
+      <span class="eyebrow eyebrow--accent">KYC &amp; loan fraud desk</span>
+      <h1>Catch forged papers, fake faces and cloned voices.</h1>
+      <p>Three checks for banks and fintechs: tamper-check an Aadhaar, PAN, salary slip or bank statement, run a liveness test during video KYC, and screen a call for a cloned voice.</p>
+    </div>
+
+    <div class="segmented" role="tablist" aria-label="KYC checks" style="max-width: 560px; margin-bottom: 24px;">
+      <button type="button" role="tab" data-tab="doc" aria-selected="true">Document check</button>
+      <button type="button" role="tab" data-tab="live" aria-selected="false">Video-KYC liveness</button>
+      <button type="button" role="tab" data-tab="voice" aria-selected="false">Voice-clone check</button>
+    </div>
+
+    <!-- ================= Document check ================= -->
+    <div class="workbench" data-panel="doc">
+      <section class="card" aria-labelledby="docTitle">
+        <h2 class="card__title" id="docTitle">Document</h2>
+        <p class="card__sub">Upload a PDF or a photo. Nothing is shared with anyone.</p>
+
+        <div class="segmented" role="group" aria-label="Document type" id="docTypes" style="margin: 20px 0 16px; grid-template-columns: repeat(2, 1fr); grid-auto-flow: row;">
+          <button type="button" data-type="aadhaar" aria-pressed="true">Aadhaar</button>
+          <button type="button" data-type="pan" aria-pressed="false">PAN card</button>
+          <button type="button" data-type="salary" aria-pressed="false">Salary slip</button>
+          <button type="button" data-type="bank" aria-pressed="false">Bank statement</button>
+        </div>
+
+        <div class="dropzone" id="docDrop" role="button" tabindex="0" aria-label="Choose a document">
+          <div class="dropzone__icon" id="docDropIcon"></div>
+          <div><strong>Drop a file or click to browse</strong><span>PDF, PNG, JPEG or WebP, up to 15 MB</span></div>
+          <input type="file" id="docFile" accept="application/pdf,image/png,image/jpeg,image/webp" hidden />
+        </div>
+        <div class="file" id="docChosen" hidden>
+          <div class="file__meta"><div class="file__name" id="docName"></div><div class="file__size" id="docSize"></div></div>
+          <button class="icon-btn" type="button" id="docClear" aria-label="Remove file"></button>
+        </div>
+
+        <details class="block" id="docDetails">
+          <summary class="eyebrow" style="cursor: pointer;">Type details to check (for scans and photos)</summary>
+          <div style="display: grid; gap: 10px; margin-top: 12px;">
+            <input class="input mono" id="fAadhaar" placeholder="Aadhaar number" autocomplete="off" />
+            <input class="input mono" id="fPan" placeholder="PAN" autocomplete="off" />
+            <input class="input" id="fName" placeholder="Full name (checks the PAN surname letter)" autocomplete="off" />
+            <input class="input mono" id="fIfsc" placeholder="IFSC code" autocomplete="off" />
+            <input class="input mono" id="fGross" placeholder="Gross pay" inputmode="decimal" autocomplete="off" />
+            <input class="input mono" id="fNet" placeholder="Net pay" inputmode="decimal" autocomplete="off" />
+          </div>
+        </details>
+
+        <button class="btn btn--primary btn--lg btn--block" id="docBtn" type="button" style="margin-top: 16px;">Check document</button>
+
+        <div class="block">
+          <div class="eyebrow block__title">Try a specimen (fake data)</div>
+          <div class="examples" id="docSamples"></div>
+          <p class="hint">Specimens are made-up documents stamped "SPECIMEN - TEST DATA". Pick a document type above, then a specimen.</p>
+        </div>
+      </section>
+
+      <section class="card" aria-live="polite" aria-labelledby="docResTitle">
+        <h2 class="sr-only" id="docResTitle">Document result</h2>
+        <div class="empty" id="docEmpty"><div><h3>No document checked yet</h3><p>Upload a file or try a specimen. The verdict appears here.</p></div></div>
+        <div class="scanning" id="docLoading" hidden><div><div class="scan-doc" style="margin: 0 auto;" aria-hidden="true"></div><h3 style="margin-top: 22px; font-size: 19px;">Checking document…</h3></div></div>
+        <div id="docResult" hidden>
+          <div class="verdict" id="docVerdict"><div class="verdict__icon" id="docVIcon"></div><div><div class="verdict__title" id="docVTitle"></div><p class="verdict__text" id="docVText"></p></div></div>
+          <div class="scores block">
+            <div class="score"><div id="gaugeDoc"></div><div><div class="score__label">Forgery risk</div><div class="score__note">Higher is worse. Combined from every check below.</div></div></div>
+          </div>
+          <div class="block"><div class="eyebrow block__title">Checks run</div><div id="docChecks"></div></div>
+          <div class="block"><div class="eyebrow block__title">What to do</div><ul class="findings" id="docAdvice"></ul></div>
+          <div class="block"><div class="eyebrow block__title">SHA-256 fingerprint</div><div class="hash"><code id="docHash"></code></div></div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ================= Liveness ================= -->
+    <div class="workbench" data-panel="live" hidden>
+      <section class="card" aria-labelledby="liveTitle">
+        <h2 class="card__title" id="liveTitle">Video-KYC liveness</h2>
+        <p class="card__sub">The customer follows three random instructions on camera. A photo or a replayed clip cannot.</p>
+        <div class="mg-controls">
+          <button class="btn btn--primary btn--lg" id="liveStart" type="button">Start with camera</button>
+          <button class="btn btn--ghost btn--lg" id="liveStop" type="button" hidden>Cancel</button>
+        </div>
+        <div class="block">
+          <div class="eyebrow block__title">No camera? Run a simulated session</div>
+          <div class="examples">
+            <button class="example" type="button" data-sim="genuine">Genuine customer</button>
+            <button class="example" type="button" data-sim="photo">Photo held to camera</button>
+            <button class="example" type="button" data-sim="swap">Face-swap attack</button>
+            <button class="example" type="button" data-sim="replay">Replayed video</button>
+          </div>
+          <p class="hint">Simulated sessions send prepared measurements to the same scoring engine the live camera uses.</p>
+        </div>
+        <div class="block">
+          <div class="notice" data-tone="accent"><span><strong>Private by design.</strong> The face AI runs in your browser. Video is never uploaded.</span></div>
+        </div>
+      </section>
+
+      <section class="card" aria-live="polite" aria-labelledby="liveResTitle">
+        <h2 class="sr-only" id="liveResTitle">Liveness result</h2>
+        <div class="mg-stage" id="liveStage" data-level="IDLE">
+          <video id="liveVideo" playsinline muted hidden></video>
+          <canvas id="liveOverlay"></canvas>
+          <div class="mg-stage__idle" id="liveIdle"><div>Press <b>Start with camera</b>, or run a simulated session.</div></div>
+        </div>
+        <div class="verdict block" id="livePrompt" data-tone="accent" hidden>
+          <div class="verdict__icon" id="livePromptIcon"></div>
+          <div><div class="verdict__title" id="livePromptTitle"></div><p class="verdict__text" id="livePromptText"></p></div>
+        </div>
+        <ul class="findings block" id="liveSteps"></ul>
+        <div id="liveResult" hidden>
+          <div class="verdict" id="liveVerdict"><div class="verdict__icon" id="liveVIcon"></div><div><div class="verdict__title" id="liveVTitle"></div><p class="verdict__text" id="liveVText"></p></div></div>
+          <div class="scores block"><div class="score"><div id="gaugeLive"></div><div><div class="score__label">Fraud risk</div><div class="score__note">Higher is worse.</div></div></div></div>
+          <div class="block"><div class="eyebrow block__title">Checks run</div><div id="liveChecks"></div></div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ================= Voice ================= -->
+    <div class="workbench" data-panel="voice" hidden>
+      <section class="card" aria-labelledby="voiceTitle">
+        <h2 class="card__title" id="voiceTitle">Voice-clone check</h2>
+        <p class="card__sub">For "relative in trouble" calls and phone-banking fraud. Audio is analysed in your browser.</p>
+        <div class="mg-controls">
+          <button class="btn btn--primary btn--lg" id="recBtn" type="button">Record up to 10 s</button>
+          <button class="btn btn--ghost btn--lg" id="voiceFileBtn" type="button">Upload audio</button>
+          <input type="file" id="voiceFile" accept="audio/*" hidden />
+        </div>
+        <p class="hint" id="recHint">Speak or play the call audio near the microphone. Aim for at least 3 seconds of clear speech.</p>
+        <div class="block">
+          <div class="eyebrow block__title">Try a sample</div>
+          <div class="examples" id="voiceSamples"></div>
+          <p class="hint">Samples: real recorded human speech, and synthetic speech made with text-to-speech models.</p>
+        </div>
+        <div class="block"><div class="notice" data-tone="accent"><span><strong>Early warning, not proof.</strong> Voice detection is hard. Always confirm a caller on a second channel.</span></div></div>
+      </section>
+
+      <section class="card" aria-live="polite" aria-labelledby="voiceResTitle">
+        <h2 class="sr-only" id="voiceResTitle">Voice result</h2>
+        <div class="empty" id="voiceEmpty"><div><h3>No audio checked yet</h3><p>Record, upload or pick a sample.</p></div></div>
+        <div class="scanning" id="voiceLoading" hidden><div><div class="scan-doc" style="margin: 0 auto;" aria-hidden="true"></div><h3 style="margin-top: 22px; font-size: 19px;">Analysing voice…</h3></div></div>
+        <div id="voiceResult" hidden>
+          <div class="verdict" id="voiceVerdict"><div class="verdict__icon" id="voiceVIcon"></div><div><div class="verdict__title" id="voiceVTitle"></div><p class="verdict__text" id="voiceVText"></p></div></div>
+          <div class="scores block"><div class="score"><div id="gaugeVoice"></div><div><div class="score__label">Synthetic-voice risk</div><div class="score__note">Higher is worse.</div></div></div></div>
+          <p class="hint" id="voiceNotes"></p>
+          <div class="block"><div class="eyebrow block__title">What the model saw</div><div id="voiceSignals"></div></div>
+          <div class="block"><div class="eyebrow block__title">What to do</div><ul class="findings" id="voiceAdvice"></ul></div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer id="footer"></footer>
+
+  <script src="voicefeatures.js"></script>
+  <script type="module" src="kyc.js"></script>
+</body>
+</html>

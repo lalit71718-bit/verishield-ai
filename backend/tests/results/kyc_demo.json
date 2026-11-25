@@ -1,0 +1,325 @@
+{
+ "summary": {
+  "docs": [
+   {
+    "n": 5,
+    "ok": 5
+   },
+   {
+    "n": 6,
+    "ok": 6
+   }
+  ],
+  "live": [
+   {
+    "n": 2,
+    "ok": 2
+   },
+   {
+    "n": 4,
+    "ok": 4
+   }
+  ],
+  "voice": [
+   {
+    "n": 3,
+    "ok": 2
+   },
+   {
+    "n": 6,
+    "ok": 6
+   }
+  ]
+ },
+ "docs": [
+  {
+   "file": "genuine_aadhaar.pdf",
+   "docType": "aadhaar",
+   "truth": "genuine",
+   "what": "Valid Aadhaar number, plain generator",
+   "verdict": "NO_TAMPER_SIGNS",
+   "score": 0,
+   "failed": [],
+   "correct": true
+  },
+  {
+   "file": "genuine_pan.pdf",
+   "docType": "pan",
+   "truth": "genuine",
+   "what": "Valid PAN, surname letter matches",
+   "verdict": "NO_TAMPER_SIGNS",
+   "score": 0,
+   "failed": [],
+   "correct": true
+  },
+  {
+   "file": "genuine_salary_slip.pdf",
+   "docType": "salary",
+   "truth": "genuine",
+   "what": "Earnings, deductions and net pay add up",
+   "verdict": "NO_TAMPER_SIGNS",
+   "score": 0,
+   "failed": [],
+   "correct": true
+  },
+  {
+   "file": "genuine_bank_statement.pdf",
+   "docType": "bank",
+   "truth": "genuine",
+   "what": "Every row follows from the previous balance",
+   "verdict": "NO_TAMPER_SIGNS",
+   "score": 0,
+   "failed": [],
+   "correct": true
+  },
+  {
+   "file": "genuine_aadhaar_photo.jpg",
+   "docType": "aadhaar",
+   "truth": "genuine",
+   "what": "Camera photo (EXIF) with a valid number typed in",
+   "verdict": "NO_TAMPER_SIGNS",
+   "score": 0,
+   "failed": [],
+   "correct": true
+  },
+  {
+   "file": "tampered_aadhaar_checksum.pdf",
+   "docType": "aadhaar",
+   "truth": "fraud",
+   "what": "Last digit changed + saved with Canva",
+   "verdict": "LIKELY_FORGED",
+   "score": 75,
+   "failed": [
+    "Editing software",
+    "Aadhaar number"
+   ],
+   "correct": true
+  },
+  {
+   "file": "tampered_aadhaar_photo.png",
+   "docType": "aadhaar",
+   "truth": "fraud",
+   "what": "Saved by Adobe Photoshop + number with wrong checksum",
+   "verdict": "LIKELY_FORGED",
+   "score": 75,
+   "failed": [
+    "Image origin",
+    "Aadhaar number"
+   ],
+   "correct": true
+  },
+  {
+   "file": "tampered_pan_surname.pdf",
+   "docType": "pan",
+   "truth": "fraud",
+   "what": "5th PAN letter does not match the surname",
+   "verdict": "REVIEW",
+   "score": 50,
+   "failed": [
+    "PAN structure"
+   ],
+   "correct": true
+  },
+  {
+   "file": "tampered_salary_totals.pdf",
+   "docType": "salary",
+   "truth": "fraud",
+   "what": "Gross inflated and net pay raised by 25,000",
+   "verdict": "LIKELY_FORGED",
+   "score": 75,
+   "failed": [
+    "Earnings add up",
+    "Net pay is correct"
+   ],
+   "correct": true
+  },
+  {
+   "file": "tampered_salary_word.pdf",
+   "docType": "salary",
+   "truth": "fraud",
+   "what": "Net pay raised, document made in Microsoft Word",
+   "verdict": "LIKELY_FORGED",
+   "score": 70,
+   "failed": [
+    "Editing software",
+    "Net pay is correct"
+   ],
+   "correct": true
+  },
+  {
+   "file": "tampered_bank_statement.pdf",
+   "docType": "bank",
+   "truth": "fraud",
+   "what": "One credit edited to 79,900 and re-saved with iLovePDF",
+   "verdict": "LIKELY_FORGED",
+   "score": 75,
+   "failed": [
+    "Saved after creation",
+    "Running balance"
+   ],
+   "correct": true
+  }
+ ],
+ "live": [
+  {
+   "name": "Genuine customer follows 3 random actions",
+   "truth": "genuine",
+   "verdict": "VERIFIED",
+   "risk": 0,
+   "failed": [],
+   "correct": true
+  },
+  {
+   "name": "Genuine customer, slower reactions",
+   "truth": "genuine",
+   "verdict": "VERIFIED",
+   "risk": 0,
+   "failed": [],
+   "correct": true
+  },
+  {
+   "name": "Photo held up to the camera",
+   "truth": "fraud",
+   "verdict": "REJECT",
+   "risk": 100,
+   "failed": [
+    "Random actions",
+    "Natural movement",
+    "Face-swap check"
+   ],
+   "correct": true
+  },
+  {
+   "name": "Real-time face-swap on a live call",
+   "truth": "fraud",
+   "verdict": "REJECT",
+   "risk": 55,
+   "failed": [
+    "Face-swap check"
+   ],
+   "correct": true
+  },
+  {
+   "name": "Pre-recorded video replayed to the camera",
+   "truth": "fraud",
+   "verdict": "REJECT",
+   "risk": 80,
+   "failed": [
+    "Random actions",
+    "Reaction time"
+   ],
+   "correct": true
+  },
+  {
+   "name": "Coach standing next to the customer",
+   "truth": "fraud",
+   "verdict": "MANUAL_REVIEW",
+   "risk": 25,
+   "failed": [
+    "Single person"
+   ],
+   "correct": true
+  }
+ ],
+ "voice": [
+  {
+   "file": "human_clean_16k.wav",
+   "truth": "genuine",
+   "what": "Real human speech (MediaPipe test recording)",
+   "verdict": "NO_SYNTHETIC_SIGNS",
+   "score": 52,
+   "correct": true
+  },
+  {
+   "file": "human_clean_48k.wav",
+   "truth": "genuine",
+   "what": "Same real recording, 48 kHz",
+   "verdict": "NO_SYNTHETIC_SIGNS",
+   "score": 57,
+   "correct": true
+  },
+  {
+   "file": "human_phone_8k.wav",
+   "truth": "genuine",
+   "what": "Real human speech through a simulated phone line",
+   "verdict": "LIKELY_SYNTHETIC",
+   "score": 72,
+   "correct": false
+  },
+  {
+   "file": "kokoro_female_24k.wav",
+   "truth": "fraud",
+   "what": "Kokoro neural TTS, female (\"Hi mom, I am in trouble\")",
+   "verdict": "LIKELY_SYNTHETIC",
+   "score": 68,
+   "correct": true
+  },
+  {
+   "file": "kokoro_male_24k.wav",
+   "truth": "fraud",
+   "what": "Kokoro neural TTS, male",
+   "verdict": "LIKELY_SYNTHETIC",
+   "score": 68,
+   "correct": true
+  },
+  {
+   "file": "kokoro_british_24k.wav",
+   "truth": "fraud",
+   "what": "Kokoro neural TTS, British",
+   "verdict": "SUSPICIOUS",
+   "score": 60,
+   "correct": true
+  },
+  {
+   "file": "kokoro_female_phone_8k.wav",
+   "truth": "fraud",
+   "what": "Kokoro neural TTS through a simulated phone line",
+   "verdict": "SUSPICIOUS",
+   "score": 64,
+   "correct": true
+  },
+  {
+   "file": "espeak_male_22k.wav",
+   "truth": "fraud",
+   "what": "espeak-ng classic TTS, male (\"Hello, this is your bank\")",
+   "verdict": "LIKELY_SYNTHETIC",
+   "score": 84,
+   "correct": true
+  },
+  {
+   "file": "espeak_female_22k.wav",
+   "truth": "fraud",
+   "what": "espeak-ng classic TTS, female",
+   "verdict": "LIKELY_SYNTHETIC",
+   "score": 72,
+   "correct": true
+  }
+ ],
+ "holdout": {
+  "human sentences": {
+   "n": 20,
+   "ok": 10,
+   "truth": "human"
+  },
+  "human words": {
+   "n": 89,
+   "ok": 71,
+   "truth": "human"
+  },
+  "Kokoro sentences": {
+   "n": 36,
+   "ok": 15,
+   "truth": "synthetic"
+  },
+  "espeak words": {
+   "n": 24,
+   "ok": 18,
+   "truth": "synthetic"
+  },
+  "Kokoro words": {
+   "n": 47,
+   "ok": 18,
+   "truth": "synthetic"
+  }
+ }
+}
