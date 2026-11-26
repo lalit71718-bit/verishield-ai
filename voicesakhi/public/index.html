@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VoiceSakhi</title>
+<style>
+:root{--bg:#fff7ed;--card:#fff;--ink:#1f2937;--mute:#6b7280;--brand:#ea580c;--brand2:#9a3412;--ok:#15803d;--line:#fed7aa;--me:#ffedd5;--bot:#f3f4f6}
+@media (prefers-color-scheme:dark){:root{--bg:#1c1410;--card:#26190f;--ink:#f5f5f4;--mute:#a8a29e;--brand:#fb923c;--brand2:#fdba74;--ok:#4ade80;--line:#4a2f1a;--me:#4a2f1a;--bot:#2f2218}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,sans-serif}
+header{padding:14px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--line)}
+header h1{font-size:20px;margin:0}header small{color:var(--mute)}
+main{display:grid;gap:16px;padding:16px;max-width:1000px;margin:auto;grid-template-columns:1fr}
+@media(min-width:800px){main{grid-template-columns:1.2fr 1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px}
+#chat{height:340px;overflow:auto;display:flex;flex-direction:column;gap:8px;padding:4px}
+.b{max-width:85%;padding:8px 12px;border-radius:14px}.b.me{align-self:flex-end;background:var(--me)}.b.bot{align-self:flex-start;background:var(--bot)}
+.controls{display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:12px}
+#mic{width:84px;height:84px;border-radius:50%;border:0;background:var(--brand);color:#fff;font-size:34px;cursor:pointer}
+#mic.on{animation:p 1s infinite;background:#dc2626}@keyframes p{50%{box-shadow:0 0 0 14px #dc262633}}
+#status{color:var(--mute);font-size:14px;min-height:20px}
+form{display:flex;gap:8px;width:100%}input[type=text]{flex:1;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:16px}
+button.s{padding:10px 14px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.chips button{font-size:13px;padding:6px 10px;border-radius:999px;border:1px solid var(--brand);background:transparent;color:var(--brand2);cursor:pointer;text-align:left}
+h2{font-size:15px;margin:0 0 8px}ul{margin:0;padding:0;list-style:none;font-size:14px}
+li{padding:6px 0;border-bottom:1px dashed var(--line)}li:last-child{border:0}.ref{color:var(--ok);font-weight:600}.t{color:var(--mute);font-size:12px}
+.pill{display:inline-block;font-size:12px;padding:2px 8px;border-radius:999px;background:var(--me);color:var(--brand2)}
+#log{max-height:200px;overflow:auto}
+.warn{font-size:13px;color:var(--mute);margin-top:8px}
+</style>
+</head>
+<body>
+<header><div style="font-size:28px">🎙️</div><div><h1>VoiceSakhi <small>· आवाज़ से काम</small></h1><small>Bolo. Samjhega. Confirm karega. Kar dega.</small></div></header>
+<main>
+  <section class="card">
+    <div id="chat" aria-live="polite"></div>
+    <div class="controls">
+      <button id="mic" aria-label="Bolne ke liye dabayein">🎤</button>
+      <div id="status">Mic dabayein aur Hindi / Hinglish mein bolein</div>
+      <form id="f"><input id="txt" type="text" placeholder="ya yahan type karein…" autocomplete="off"><button class="s">Bhejein</button></form>
+      <label style="font-size:14px"><input type="checkbox" id="speak" checked> Agent ki awaaz (voice reply)</label>
+    </div>
+    <div class="chips" id="chips"></div>
+    <div class="warn">Demo PIN: <b>1234</b> (bolein "ek do teen char"). Sab data nakli (mock) hai.</div>
+  </section>
+  <aside style="display:grid;gap:16px;align-content:start">
+    <div class="card"><h2>Kiya gaya kaam <span class="pill" id="cnt">0</span></h2><ul id="done"><li class="t">Abhi kuch nahi</li></ul></div>
+    <div class="card"><h2>Audit log (sab kuch record hota hai)</h2><ul id="log"></ul></div>
+    <button class="s" id="reset">🔄 Nayi call shuru karein</button>
+  </aside>
+</main>
+<script>
+const SID='web-'+Math.random().toString(36).slice(2,8);
+const $=s=>document.querySelector(s);
+const chat=$('#chat'),statusEl=$('#status');
+const SAMPLES=[
+ 'VoiceSakhi, kal subah 10 baje doctor ke clinic mein appointment kar dena, aur bijli bill ke liye kal 9 baje yaad dila dena.',
+ 'Bijli bill 1200 rupaye bhar do',
+ '10 kilo chawal aur 2 packet chai order kar do',
+ 'Mechanic ka appointment parso shaam 5 baje',
+ 'कल सुबह 10 बजे डॉक्टर के क्लिनिक में अपॉइंटमेंट करना',
+ 'Mujhe kisi insaan se baat karni hai'];
+SAMPLES.forEach(t=>{const b=document.createElement('button');b.textContent=t.length>48?t.slice(0,46)+'…':t;b.onclick=()=>send(t);$('#chips').appendChild(b)});
+function bubble(who,t){const d=document.createElement('div');d.className='b '+who;d.textContent=t;chat.appendChild(d);chat.scrollTop=chat.scrollHeight}
+function speak(t){if(!$('#speak').checked||!('speechSynthesis' in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t.replace(/₹/g,'rupaye ').replace(/#/g,'number '));u.lang='hi-IN';const v=speechSynthesis.getVoices().find(v=>/hi[-_]IN/i.test(v.lang))||speechSynthesis.getVoices().find(v=>/en[-_]IN/i.test(v.lang));if(v)u.voice=v;u.onend=()=>{};speechSynthesis.speak(u)}
+async function send(text){
+  text=text.trim();if(!text)return;bubble('me',text);statusEl.textContent='Soch raha hoon…';
+  try{const r=await fetch('/api/turn',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({session:SID,text})});const j=await r.json();
+    bubble('bot',j.reply);speak(j.reply);statusEl.textContent=j.state==='pin'?'🔒 PIN bolein':j.state==='handoff'?'👤 Operator se connected':j.state==='confirm'?'Haan / Nahi bolein':'Mic dabayein aur bolein';refresh()}
+  catch{statusEl.textContent='Server se connect nahi ho paya'}
+}
+async function refresh(){
+  const s=await (await fetch('/api/state')).json();
+  const items=[...s.bookings.map(x=>['📅',`${x.provider} appointment — ${x.day||''} ${x.time?x.time.hour+':'+String(x.time.minute).padStart(2,'0'):''}`,x.ref]),
+   ...s.reminders.map(x=>['⏰',`Reminder: ${x.topic} — ${x.day||''} ${x.time?x.time.hour+':'+String(x.time.minute).padStart(2,'0'):''}`,x.ref]),
+   ...s.payments.map(x=>['💳',`${x.biller} bill ₹${x.amount}`,x.ref]),
+   ...s.orders.map(x=>['🛒',`${x.item} ${x.qty.n} ${x.qty.unit}`,x.ref])].sort((a,b)=>b[2]-a[2]);
+  $('#cnt').textContent=items.length;
+  $('#done').innerHTML=items.length?items.map(i=>`<li>${i[0]} ${i[1]} <span class="ref">Ref #${i[2]}</span></li>`).join(''):'<li class="t">Abhi kuch nahi</li>';
+  $('#log').innerHTML=s.log.slice(-40).reverse().map(l=>`<li><span class="t">${l.at.slice(11,19)}</span> <b>${l.event}</b> ${esc(JSON.stringify(l.detail)).slice(0,90)}</li>`).join('');
+}
+const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+$('#f').onsubmit=e=>{e.preventDefault();send($('#txt').value);$('#txt').value=''};
+$('#reset').onclick=async()=>{await fetch('/api/reset?session='+SID,{method:'POST'});chat.innerHTML='';bubble('bot','Namaste! Main VoiceSakhi hoon. Boliye, kya karna hai?');speak('Namaste! Main VoiceSakhi hoon. Boliye, kya karna hai?')};
+// Speech recognition (Chrome/Edge/Android). Falls back to typing elsewhere.
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;let rec=null,on=false;
+if(!SR){$('#mic').style.opacity=.4;statusEl.textContent='Is browser mein mic support nahi — Chrome use karein ya type karein'}
+else{rec=new SR();rec.lang='hi-IN';rec.interimResults=true;rec.continuous=false;
+  rec.onresult=e=>{let t='';for(const r of e.results)t+=r[0].transcript;statusEl.textContent='🎧 '+t;if(e.results[e.results.length-1].isFinal){on=false;$('#mic').classList.remove('on');send(t)}};
+  rec.onerror=e=>{on=false;$('#mic').classList.remove('on');statusEl.textContent='Mic error: '+e.error};
+  rec.onend=()=>{on=false;$('#mic').classList.remove('on')};
+  $('#mic').onclick=()=>{if(on){rec.stop();return}speechSynthesis&&speechSynthesis.cancel();try{rec.start();on=true;$('#mic').classList.add('on');statusEl.textContent='Sun raha hoon… boliye'}catch{}}}
+bubble('bot','Namaste! Main VoiceSakhi hoon. Boliye, kya karna hai?');refresh();
+</script>
+</body></html>
