@@ -14,7 +14,14 @@
 
   // Backend origin. Override with `window.VERISHIELD_API_BASE` or the
   // `verishield_api` localStorage key when the API is not on localhost:5000.
-  const API_BASE = (window.VERISHIELD_API_BASE || store.get('verishield_api') || 'http://localhost:5000')
+  // When the page is opened from another device on the same network (for example
+  // http://192.168.1.20:8080), "localhost" would point at that device, so use the
+  // same host the page came from, on the backend port.
+  const host = location.hostname;
+  const isLocal = !host || host === 'localhost' || host === '127.0.0.1' || location.protocol === 'file:';
+  const isHosted = /\.vercel\.app$/.test(host);
+  const DEFAULT_API = isLocal || isHosted ? 'http://localhost:5000' : `http://${host}:5000`;
+  const API_BASE = (window.VERISHIELD_API_BASE || store.get('verishield_api') || DEFAULT_API)
     .replace(/\/+$/, '') + '/api';
 
   /* ---------- Theme ---------- */
