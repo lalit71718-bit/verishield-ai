@@ -1,0 +1,9 @@
+{
+ "note": "A still photo of a face was played as the camera feed (headless Chromium, real MediaPipe face model, real page code). The page asked for 3 random actions.",
+ "verdict": "Reject: not a live person",
+ "risk": 100,
+ "failed": [
+  "Random actions",
+  "Natural movement"
+ ]
+}
